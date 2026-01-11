@@ -2,316 +2,309 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmic Scheduler</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cosmic Scheduler Pro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;500;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.2);
-            --text-color: #ffffff;
-            --accent: #00d2ff;
-            --lunch-row-bg: rgba(255, 215, 0, 0.15); /* Gold tint for lunch */
+            --glass-bg: rgba(20, 30, 48, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent-cyan: #00d2ff;
+            --accent-gold: #ffd700;
+            --text-main: #ffffff;
+            --lunch-bg: rgba(255, 215, 0, 0.1);
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             font-family: 'Exo 2', sans-serif;
-            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-            color: var(--text-color);
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 0; /* Remove padding for full mobile width */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden;
+            overflow-x: hidden; /* Prevent body scroll, handle in table */
         }
 
-        /* --- STARRY BACKGROUND ANIMATION --- */
-        #stars-container {
+        /* --- BACKGROUND STARS --- */
+        #stars {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none; overflow: hidden;
+            z-index: -1; pointer-events: none;
         }
-        
         .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle var(--duration) ease-in-out infinite;
-            opacity: var(--opacity);
+            position: absolute; background: white; border-radius: 50%;
+            animation: twinkle var(--dur) ease-in-out infinite; opacity: var(--op);
         }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: var(--opacity); transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
-        }
+        @keyframes twinkle { 0%,100%{opacity:var(--op);transform:scale(1);} 50%{opacity:0.2;transform:scale(0.5);} }
 
         /* --- HEADER --- */
         header {
-            width: 100%; max-width: 1200px;
+            width: 95%; max-width: 1400px; margin-top: 15px;
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 16px; padding: 12px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            z-index: 100;
         }
 
-        .brand h1 { margin: 0; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; background: linear-gradient(to right, #fff, #00d2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .brand p { margin: 0; opacity: 0.7; font-size: 0.9rem; }
-
-        .controls { display: flex; gap: 10px; }
+        .brand h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,210,255,0.5); }
+        
+        .controls { display: flex; gap: 8px; }
         
         input {
-            background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border);
-            color: white; padding: 10px 15px; border-radius: 10px; outline: none;
-            font-family: inherit;
+            width: 140px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
+            color: white; padding: 8px 12px; border-radius: 8px; outline: none; font-family: inherit; font-weight: 700;
         }
         
         button {
-            background: var(--accent); color: #000; border: none;
-            padding: 10px 20px; border-radius: 10px; font-weight: 800;
-            cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            background: var(--accent-cyan); color: #000; border: none;
+            padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,210,255,0.3);
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 0 15px var(--accent); }
 
-        /* --- SLIDABLE SUBJECTS --- */
-        .slider-container {
-            width: 100%; max-width: 1200px;
-            margin-bottom: 30px;
+        /* --- SLIDER AREA --- */
+        .slider-wrap {
+            width: 95%; max-width: 1400px; margin: 20px 0;
+            display: flex; gap: 10px; overflow-x: auto;
+            padding-bottom: 5px; scrollbar-width: none;
         }
-        .slider-title { font-weight: 700; margin-bottom: 10px; opacity: 0.8; }
-        
-        .subjects-track {
-            display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px;
-            scrollbar-width: thin; scrollbar-color: var(--accent) transparent;
-        }
-        .subjects-track::-webkit-scrollbar { height: 6px; }
-        .subjects-track::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+        .slider-wrap::-webkit-scrollbar { display: none; }
 
-        .sub-block {
-            min-width: 140px; background: rgba(255,255,255,0.1);
+        .sub-pill {
+            flex-shrink: 0; background: rgba(255,255,255,0.08);
             border: 1px solid var(--glass-border);
-            border-radius: 15px; padding: 15px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            backdrop-filter: blur(5px);
-            transition: transform 0.2s;
+            padding: 8px 16px; border-radius: 30px;
+            font-size: 0.85rem; font-weight: 600;
+            display: flex; gap: 8px; align-items: center;
+            backdrop-filter: blur(4px);
         }
-        .sub-block:hover { transform: translateY(-5px); background: rgba(255,255,255,0.15); }
-        .sub-code { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
-        .sub-name { font-size: 0.8rem; opacity: 0.8; margin-top: 5px; line-height: 1.2; }
-        .sub-div { margin-top: 10px; font-size: 0.75rem; font-weight: 700; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 6px; align-self: flex-start; }
+        .pill-dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px currentColor; }
 
-        /* --- MAIN TABLE --- */
-        .table-wrapper {
-            width: 100%; max-width: 1200px;
-            overflow-x: auto;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        /* --- TABLE CONTAINER (The Core Mobile Logic) --- */
+        .table-frame {
+            flex: 1; width: 100%; max-width: 1400px;
+            overflow: auto; /* Allow scroll */
+            position: relative;
+            background: rgba(0,0,0,0.3);
+            border-top: 1px solid var(--glass-border);
+            /* Height management for mobile */
+            height: calc(100vh - 140px); 
         }
 
-        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
-
-        th, td {
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px; text-align: center; vertical-align: top;
-            width: 14%; /* Equal width columns */
+        table {
+            border-collapse: separate; border-spacing: 0;
+            width: 100%; min-width: 800px; /* Ensure horizontal scroll on mobile */
         }
-        
-        /* Time Column */
-        th:first-child, td:first-child { width: 80px; background: rgba(0,0,0,0.3); font-weight: 700; color: var(--accent); }
 
+        /* --- STICKY HEADERS --- */
         thead th {
-            background: rgba(255,255,255,0.05);
-            padding: 20px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+            position: sticky; top: 0; z-index: 50;
+            background: #141b25; /* Solid dark color to cover scrolling content */
+            color: var(--accent-cyan);
+            padding: 15px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 2px solid var(--accent-cyan);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
-        /* --- LUNCH ROW --- */
-        .lunch-row td {
-            background: var(--lunch-row-bg) !important;
-            height: 60px;
+        /* Top-Left Corner Fix */
+        thead th:first-child {
+            position: sticky; left: 0; z-index: 60;
+            background: #141b25;
+            border-right: 1px solid var(--glass-border);
+        }
+
+        /* --- STICKY TIME COLUMN --- */
+        tbody th {
+            position: sticky; left: 0; z-index: 40;
+            background: #141b25; /* Solid dark bg */
+            color: rgba(255,255,255,0.7);
+            padding: 10px; font-size: 0.8rem; font-weight: 700;
+            border-right: 2px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
             vertical-align: middle;
-            color: #ffd700;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* --- CELLS --- */
+        td {
+            border-bottom: 1px solid var(--glass-border);
+            border-right: 1px solid var(--glass-border);
+            padding: 4px; vertical-align: top;
+            height: 100px; /* Fixed height for consistency */
+            width: 14.28%; /* 7 cols (Time + 6 Days) */
             position: relative;
+        }
+
+        /* --- LUNCH ROW STYLING --- */
+        .lunch-row th, .lunch-row td {
+            background: var(--lunch-bg) !important;
+            border-bottom: 1px solid var(--accent-gold);
+            height: 60px; /* Thinner row */
         }
         
-        /* The text "LUNCH BREAK" */
-        .lunch-label {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.6; pointer-events: none;
-            font-size: 1.5rem; white-space: nowrap;
+        .lunch-row th { color: var(--accent-gold); } /* Time cell color */
+
+        /* The Sticky Lunch Label */
+        .lunch-sticky {
+            position: absolute;
+            left: 0; right: 0; top: 0; bottom: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; letter-spacing: 4px; color: var(--accent-gold);
+            text-shadow: 0 2px 10px black;
+            font-size: 1.2rem;
+            pointer-events: none; /* Let clicks pass through if needed */
         }
 
-        /* --- CLASS CARDS --- */
-        .schedule-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-left: 4px solid var(--accent);
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 5px;
-            text-align: left;
-            position: relative;
-            z-index: 2; /* Sit above lunch text */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        /* --- CARDS --- */
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            border-radius: 8px; padding: 8px;
+            height: 100%; width: 100%;
+            display: flex; flex-direction: column; justify-content: space-between;
+            border: 1px solid rgba(255,255,255,0.1);
             transition: transform 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        .schedule-card:hover { transform: scale(1.05); z-index: 10; background: rgba(255,255,255,0.2); }
+        .card:hover { transform: scale(1.03); background: rgba(255,255,255,0.2); z-index: 20; position: relative; }
 
-        .card-code { font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; display: flex; justify-content: space-between; }
-        .card-tag { font-size: 1rem; }
+        .card-head { font-weight: 800; font-size: 0.95rem; display: flex; justify-content: space-between; text-shadow: 0 2px 2px rgba(0,0,0,0.5); }
         .card-room { 
-            background: var(--accent); color: black; 
-            padding: 2px 6px; border-radius: 4px; 
-            font-size: 0.8rem; font-weight: 700; 
-            display: inline-block; margin-top: 6px;
+            align-self: flex-start;
+            background: #fff; color: #000;
+            font-size: 0.75rem; font-weight: 800;
+            padding: 2px 6px; border-radius: 4px;
         }
 
-        .clash-warning {
-            background: rgba(255, 87, 87, 0.2);
-            border: 2px solid #ff5757;
-            color: #ff5757; padding: 5px; border-radius: 8px; font-weight: bold;
+        .clash-box {
+            background: rgba(255, 69, 58, 0.2); border: 2px solid #ff453a;
+            color: #ff453a; height: 100%; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; font-weight: 700;
+            border-radius: 8px; animation: pulse 2s infinite;
         }
 
-        .empty-state { padding: 50px; text-align: center; width: 100%; opacity: 0.7; }
-
+        /* Empty State */
+        .intro-msg {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            text-align: center; width: 80%;
+        }
+        
     </style>
 </head>
 <body>
 
-    <div id="stars-container"></div>
+    <div id="stars"></div>
 
     <header>
         <div class="brand">
             <h1>Cosmic Scheduler</h1>
-            <p>Academic Year 2025-26</p>
         </div>
         <div class="controls">
-            <input type="text" id="misInput" placeholder="Enter MIS ID" onkeypress="handleEnter(event)">
-            <button onclick="renderTimetable()">Launch 🚀</button>
+            <input type="tel" id="misInput" placeholder="MIS ID..." onkeypress="handleEnter(event)">
+            <button onclick="renderTimetable()">GO</button>
         </div>
     </header>
 
-    <div id="contentArea" style="display:none; width: 100%; display: flex; flex-direction: column; align-items: center;">
-        
-        <div class="slider-container">
-            <div class="slider-title">Your Registered Courses</div>
-            <div class="subjects-track" id="subjectTrack">
-                </div>
-        </div>
+    <div class="slider-wrap" id="subjectBar" style="display:none;"></div>
 
-        <div class="table-wrapper">
-            <table id="mainTable">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
-                    </tr>
-                </thead>
-                <tbody id="scheduleBody"></tbody>
-            </table>
-        </div>
+    <div class="table-frame" id="tableFrame" style="display:none;">
+        <table id="mainTable">
+            <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleBody">
+                </tbody>
+        </table>
     </div>
 
-    <div id="welcomeState" class="empty-state">
-        <h2 style="font-size: 2rem;">Ready for Liftoff? 🌌</h2>
-        <p>Enter your MIS ID above to view your personalized cosmic timetable.</p>
+    <div id="intro" class="intro-msg">
+        <h2 style="font-size: 2rem; margin-bottom: 10px;">🌌 Ready?</h2>
+        <p style="opacity: 0.8;">Enter your MIS ID to launch your timetable.</p>
     </div>
 
     <script src="students.js"></script>
     <script src="logic.js"></script>
 
     <script>
-        // --- STAR GENERATOR ---
-        function createStars() {
-            const container = document.getElementById('stars-container');
-            const starCount = 150;
-            for(let i=0; i<starCount; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
-                const size = Math.random() * 2 + 1;
-                const duration = Math.random() * 3 + 2;
-                
-                star.style.left = x + '%';
-                star.style.top = y + '%';
-                star.style.width = size + 'px';
-                star.style.height = size + 'px';
-                star.style.setProperty('--duration', duration + 's');
-                star.style.setProperty('--opacity', Math.random());
-                
-                container.appendChild(star);
+        /* --- 1. STARS BACKGROUND --- */
+        function initStars() {
+            const wrap = document.getElementById('stars');
+            for(let i=0; i<100; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                const xy = [Math.random()*100, Math.random()*100];
+                const dur = Math.random() * 3 + 2;
+                const op = Math.random();
+                const size = Math.random() * 2;
+                s.style.cssText = `left:${xy[0]}%; top:${xy[1]}%; width:${size}px; height:${size}px; --dur:${dur}s; --op:${op};`;
+                wrap.appendChild(s);
             }
         }
-        createStars();
+        initStars();
 
-        // --- APP LOGIC ---
-        // We define slots including LUNCH explicitly
+        /* --- 2. LOGIC --- */
         const TIME_SLOTS = [
             { key: "0830", label: "08:30" }, 
             { key: "0930", label: "09:30" }, 
             { key: "1030", label: "10:30" }, 
             { key: "1130", label: "11:30" }, 
-            { key: "1230", label: "12:30", isLunch: true }, // MARKED AS LUNCH
+            { key: "1230", label: "12:30", type: "LUNCH" }, 
             { key: "1330", label: "01:30" }, 
             { key: "1430", label: "02:30" }, 
             { key: "1530", label: "03:30" }, 
             { key: "1630", label: "04:30" }, 
             { key: "1730", label: "05:30" }
         ];
-
         const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat"];
 
-        // Color Generator for Cards
-        function getColor(code) {
-            const colors = ['#ff7675', '#74b9ff', '#55efc4', '#a29bfe', '#fdcb6e', '#e17055', '#00cec9'];
+        // Neon Palette for subjects
+        const NEON_COLORS = [
+            "#ff9ff3", "#feca57", "#ff6b6b", "#48dbfb", "#1dd1a1", "#f368e0", "#00d2d3", "#54a0ff", "#5f27cd"
+        ];
+        
+        function getColor(str) {
             let hash = 0;
-            for (let i = 0; i < code.length; i++) hash = code.charCodeAt(i) + ((hash << 5) - hash);
-            return colors[Math.abs(hash) % colors.length];
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            return NEON_COLORS[Math.abs(hash) % NEON_COLORS.length];
         }
 
         function handleEnter(e) { if(e.key === 'Enter') renderTimetable(); }
 
         function renderTimetable() {
             const mis = document.getElementById('misInput').value.trim();
-            if(!mis) return alert("Enter MIS ID");
+            if(!mis) return alert("Please enter MIS ID");
             
-            if(typeof getStudentData !== 'function') return alert("logic.js missing");
+            if(typeof getStudentData !== 'function') return alert("Error: logic.js missing");
             const data = getStudentData(mis);
             if(!data) return alert("Student not found");
 
-            document.getElementById('welcomeState').style.display = 'none';
-            document.getElementById('contentArea').style.display = 'flex';
+            // UI Reveal
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('tableFrame').style.display = 'block';
+            document.getElementById('subjectBar').style.display = 'flex';
 
-            // 1. Render Subject Slider
-            const track = document.getElementById('subjectTrack');
-            track.innerHTML = "";
+            // 1. Render Subject Bar
+            const bar = document.getElementById('subjectBar');
+            bar.innerHTML = "";
             if(data.cards) {
                 data.cards.forEach(c => {
-                    const block = document.createElement('div');
-                    block.className = 'sub-block';
-                    block.style.borderTop = `4px solid ${getColor(c.code)}`;
-                    block.innerHTML = `
-                        <div class="sub-code" style="color:${getColor(c.code)}">${c.code}</div>
-                        <div class="sub-name">${c.name}</div>
-                        <div class="sub-div">Div ${c.div} ${c.batch !== '-' ? '| ' + c.batch : ''}</div>
+                    const col = getColor(c.code);
+                    bar.innerHTML += `
+                        <div class="sub-pill" style="border-color:${col}">
+                            <div class="pill-dot" style="color:${col}; background:${col}"></div>
+                            <span>${c.code}</span>
+                        </div>
                     `;
-                    track.appendChild(block);
                 });
             }
 
@@ -322,49 +315,69 @@
 
             TIME_SLOTS.forEach((slot, tIdx) => {
                 const tr = document.createElement('tr');
-                if(slot.isLunch) tr.className = 'lunch-row';
+                if(slot.type === 'LUNCH') tr.className = 'lunch-row';
 
-                // Time Cell
-                tr.innerHTML = `<td>${slot.label}</td>`;
+                // Sticky Time Cell
+                const th = document.createElement('th');
+                th.textContent = slot.label;
+                tr.appendChild(th);
 
                 DAYS.forEach((day, dIdx) => {
                     if(occupied[dIdx][tIdx]) return;
 
                     const td = document.createElement('td');
-                    const entry = data.schedule[`${day}-${slot.key}`];
-
-                    // Visual Lunch Label (Only if no class overlays it)
-                    if(slot.isLunch && !entry) {
-                        td.innerHTML = `<span class="lunch-label">🍽️ LUNCH BREAK</span>`;
-                        tr.appendChild(td);
-                        return; // Skip rest for this cell
+                    
+                    // --- LUNCH LOGIC ---
+                    if(slot.type === 'LUNCH') {
+                        // Check if a class actually exists here (override lunch)
+                        const entry = data.schedule[`${day}-${slot.key}`];
+                        if(!entry) {
+                            // If middle column (approx), add sticky label? 
+                            // Easier: Just add the label in the 3rd or 4th cell ONLY, or use a pseudo element.
+                            // Better mobile approach: Put label in ALL cells but hide overflow?
+                            // Let's use the 'sticky' div trick inside the TD
+                            if(dIdx === 0) { // Only inject sticky label once in the first cell, but span it? No.
+                                // We inject a sticky container in EVERY empty lunch cell to ensure visibility?
+                                // Actually, standard practice: leave empty, css background handles it. 
+                                // But user wants text.
+                                td.innerHTML = `<div class="lunch-sticky">LUNCH BREAK</div>`;
+                            } else {
+                                td.innerHTML = `<div class="lunch-sticky" style="display:none"></div>`; // Hide dupes or rely on the first one if we span
+                            }
+                            // Span logic: If we want one big row, we can merge cells.
+                            // But keeping cells separate is safer for existing logic unless we rewrite occupied matrix.
+                            // Let's just put the text in the middle cell (Wed/Thu)
+                            if(dIdx === 2) td.innerHTML = `<div class="lunch-sticky" style="width:200%; margin-left:-50%">LUNCH BREAK</div>`;
+                        }
                     }
+
+                    // --- CLASS LOGIC ---
+                    const entry = data.schedule[`${day}-${slot.key}`];
 
                     if(entry) {
                         const entries = Array.isArray(entry) ? entry : [entry];
-
+                        
                         if(entries.length > 1) {
                             // Clash
-                            td.innerHTML = `<div class="clash-warning">⚠️ Clash</div>`;
+                            td.innerHTML = `<div class="clash-box"><div>⚡ CLASH</div><div style="font-size:0.7rem">${entries.length} Classes</div></div>`;
                         } else {
                             const e = entries[0];
                             const span = e.span || 1;
-
+                            
                             if(span > 1) {
                                 td.rowSpan = span;
                                 for(let i=1; i<span; i++) occupied[dIdx][tIdx+i] = true;
                             }
 
-                            const color = getColor(e.subj);
-                            const title = e.type === 'lab' ? `${e.subj} LAB` : e.subj;
-
+                            const col = getColor(e.subj);
+                            const title = e.type === 'lab' ? `${e.subj} (L)` : e.subj;
+                            
                             td.innerHTML = `
-                                <div class="schedule-card" style="border-left-color: ${color}">
-                                    <div class="card-code">
-                                        ${title}
-                                        <span class="card-tag">${e.tag || ''}</span>
+                                <div class="card" style="border-top: 3px solid ${col}">
+                                    <div class="card-head">
+                                        <span style="color:${col}">${title}</span>
                                     </div>
-                                    <div class="card-room" style="background:${color}">${e.room}</div>
+                                    <div class="card-room">${e.room}</div>
                                 </div>
                             `;
                         }
