@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COEP Academic Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-app: #f8fafc;
+            --surface: #ffffff;
+            --surface-glass: rgba(255, 255, 255, 0.95);
+            --border: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --col-clash: linear-gradient(135deg, #ef4444, #b91c1c);
+        }
+
+        body.dark-mode {
+            --bg-app: #0f172a;
+            --surface: #1e293b;
+            --surface-glass: rgba(30, 41, 59, 0.95);
+            --border: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --shadow-card: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* --- Header --- */
+        header {
+            width: 100%;
+            max-width: 1600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 0 10px;
+        }
+
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 24px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        .brand-text h1 { font-size: 1.4rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+        .brand-text p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
+
+        .controls { display: flex; gap: 12px; align-items: center; }
+
+        .search-bar {
+            background: var(--surface);
+            padding: 4px 6px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+            display: flex; gap: 8px;
+            border: 1px solid var(--border);
+            align-items: center;
+        }
+
+        input {
+            border: none; outline: none; padding: 8px 12px;
+            font-size: 0.95rem; width: 200px; border-radius: 8px;
+            background: transparent; color: var(--text-primary);
+            font-family: inherit; font-weight: 500;
+        }
+
+        button {
+            border: none; padding: 10px 20px; border-radius: 10px;
+            font-weight: 700; cursor: pointer; transition: all 0.2s;
+            font-family: inherit;
+        }
+        button.primary { background: var(--text-primary); color: var(--bg-app); }
+        button.primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        button.toggle { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border); padding: 10px 14px; }
+        button:active { transform: scale(0.96); }
+
+        /* --- Grid Layout --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 24px;
+            width: 100%; max-width: 1600px;
+            height: calc(100vh - 120px);
+        }
+
+        /* --- Sidebar --- */
+        .sidebar {
+            display: flex; flex-direction: column; gap: 20px;
+            overflow: hidden; height: 100%;
+        }
+
+        .profile-card {
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border);
+            text-align: center; flex-shrink: 0;
+        }
+        
+        .avatar-placeholder {
+            width: 72px; height: 72px;
+            background: var(--bg-app);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; border: 2px solid var(--border);
+        }
+
+        .subject-list-container {
+            background: var(--surface);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            flex: 1; display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        .subject-list-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 700; color: var(--text-primary);
+            font-size: 0.95rem; background: var(--surface);
+        }
+
+        .subject-list-scroll { padding: 12px; overflow-y: auto; flex: 1; }
+
+        .sub-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px; margin-bottom: 8px;
+            border-radius: 10px;
+            background: var(--bg-app);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+        .sub-item:hover { transform: translateX(4px); }
+        .sub-color-circle { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .sub-info { flex: 1; min-width: 0; text-align: left; }
+        .sub-code { font-weight: 800; font-size: 0.9rem; color: var(--text-primary); }
+        .sub-name { font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sub-meta { font-size: 0.75rem; color: var(--text-primary); opacity: 0.7; margin-top: 2px; }
+
+        /* --- Timetable --- */
+        .timetable-container {
+            background: var(--surface-glass);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-card);
+            overflow: hidden; display: flex; flex-direction: column; position: relative;
+        }
+
+        .timetable-scroll { overflow: auto; flex: 1; padding-bottom: 20px; }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 900px; }
+
+        thead th {
+            background: var(--surface); padding: 16px;
+            font-weight: 700; font-size: 0.85rem; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 1px;
+            position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--border);
+        }
+
+        tbody th {
+            background: var(--surface); padding: 10px;
+            font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+            border-right: 1px solid var(--border);
+            position: sticky; left: 0; z-index: 10; text-align: center; vertical-align: middle;
+        }
+
+        td {
+            border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+            padding: 6px; vertical-align: top; height: 90px; position: relative;
+        }
+
+        .today-col { background-color: rgba(59, 130, 246, 0.04); }
+        .today-header { color: #3b82f6 !important; }
+
+        /* --- Block Card (The Colored Box) --- */
+        .block-card {
+            border-radius: 10px; padding: 10px;
+            height: 100%; width: 100%;
+            color: white; box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: space-between;
+            transition: transform 0.2s;
+        }
+        .block-card:hover { transform: scale(1.02); z-index: 5; }
+        
+        .block-header { 
+            font-weight: 800; font-size: 1.1rem; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            letter-spacing: 0.5px;
+        }
+
+        .block-room-box {
+            background: rgba(255, 255, 255, 0.95);
+            color: #0f172a;
+            border-radius: 6px; padding: 4px 8px;
+            font-weight: 700; font-size: 0.9rem;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            align-self: flex-start; /* Align left */
+            min-width: 60px;
+        }
+
+        .clash-card {
+            background: var(--col-clash);
+            border-radius: 10px; padding: 8px;
+            color: white; font-weight: 700; text-align: center;
+            border: 2px solid #fff; box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+            animation: pulse 2s infinite;
+            display: flex; flex-direction: column; justify-content: center; height: 100%;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .empty-state {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100%; color: var(--text-secondary);
+            padding: 40px; text-align: center;
+        }
+
+        @media (max-width: 1000px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .brand-text p { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="brand-icon">📅</div>
+            <div class="brand-text">
+                <h1>COEP Scheduler</h1>
+                <p>Academic Year 2025-26</p>
+            </div>
+        </div>
+        <div class="controls">
+            <div class="search-bar">
+                <input type="text" id="misInput" placeholder="Enter MIS ID..." onkeypress="handleEnter(event)">
+                <button class="primary" onclick="renderTimetable()">View</button>
+            </div>
+            <button class="toggle" onclick="toggleDarkMode()">🌙</button>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <aside class="sidebar" id="sidebarArea" style="display:none;">
+            <div class="profile-card">
+                <div class="avatar-placeholder">🎓</div>
+                <h2 id="studentName" style="margin:0; font-size:1.1rem; font-weight:700;">Student</h2>
+                <p id="studentMis" style="margin:4px 0 0; color:var(--text-secondary); font-size:0.9rem;">MIS ID</p>
+            </div>
+
+            <div class="subject-list-container">
+                <div class="subject-list-header">Registered Courses</div>
+                <div class="subject-list-scroll" id="subjectListBody">
+                    </div>
+            </div>
+        </aside>
+
+        <main class="timetable-container">
+            <div class="timetable-scroll">
+                <table id="mainTable" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th style="width: 90px;">Time</th>
+                            <th id="th-mon">Mon</th>
+                            <th id="th-tue">Tue</th>
+                            <th id="th-wed">Wed</th>
+                            <th id="th-thu">Thu</th>
+                            <th id="th-fri">Fri</th>
+                            <th id="th-sat">Sat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleBody"></tbody>
+                </table>
+
+                <div id="emptyState" class="empty-state">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">👋</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 10px;">Welcome Back</h3>
+                    <p>Enter your MIS ID to generate your timetable.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="students.js"></script>
+    <script src="logic.js"></script>
+
+    <script>
+        const TIME_SLOTS = [
+            { key: "0830", label: "08:30" }, { key: "0930", label: "09:30" },
+            { key: "1030", label: "10:30" }, { key: "1130", label: "11:30" },
+            { key: "1230", label: "12:30" }, { key: "1330", label: "01:30" },
+            { key: "1430", label: "02:30" }, { key: "1530", label: "03:30" },
+            { key: "1630", label: "04:30" }, { key: "1730", label: "05:30" }
+        ];
+
+        const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat"];
+
+        // --- UNIQUE COLOR GENERATOR ---
+        // Generates a unique, vibrant gradient for any subject code
+        function getSubjectColor(code) {
+            if (!code) return "linear-gradient(135deg, #94a3b8, #64748b)";
+            
+            // Simple string hashing
+            let hash = 0;
+            for (let i = 0; i < code.length; i++) {
+                hash = code.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            
+            // Generate HSL color
+            // Hue: based on hash (0-360)
+            // Saturation: 65-85% (Vibrant)
+            // Lightness: 45-60% (Readable with white text)
+            const h = Math.abs(hash % 360);
+            const s = 70 + (Math.abs(hash) % 20); 
+            const l = 50 + (Math.abs(hash) % 10);
+            
+            return `linear-gradient(135deg, hsl(${h}, ${s}%, ${l}%), hsl(${h}, ${s}%, ${l-15}%))`;
+        }
+
+        function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+        function handleEnter(e) { if(e.key === 'Enter') renderTimetable(); }
+
+        function renderTimetable() {
+            const mis = document.getElementById('misInput').value.trim();
+            if(!mis) return alert("Please enter MIS ID");
+            
+            if(typeof getStudentData !== 'function') return alert("Error: logic.js missing");
+            const data = getStudentData(mis);
+            if(!data) return alert("Student not found");
+
+            // --- Update UI ---
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('mainTable').style.display = 'table';
+            document.getElementById('sidebarArea').style.display = 'flex';
+
+            document.getElementById('studentName').textContent = data.name || "Student";
+            document.getElementById('studentMis').textContent = mis;
+            
+            // --- 1. Populate Sidebar List ---
+            const listBody = document.getElementById('subjectListBody');
+            listBody.innerHTML = "";
+            
+            if(data.cards && data.cards.length > 0) {
+                data.cards.forEach(card => {
+                    const bg = getSubjectColor(card.code);
+                    const item = document.createElement('div');
+                    item.className = 'sub-item';
+                    item.innerHTML = `
+                        <div class="sub-color-circle" style="background: ${bg}"></div>
+                        <div class="sub-info">
+                            <div class="sub-code">${card.code}</div>
+                            <div class="sub-name">${card.name}</div>
+                            <div class="sub-meta">Div ${card.div} | Batch ${card.batch}</div>
+                        </div>
+                    `;
+                    listBody.appendChild(item);
+                });
+            } else {
+                listBody.innerHTML = "<div style='text-align:center; padding:10px; color:gray;'>No registered courses</div>";
+            }
+
+            // --- 2. Render Timetable ---
+            
+            // Highlight Today
+            const dayIdx = new Date().getDay();
+            DAYS.forEach(day => document.getElementById(`th-${day}`).className = '');
+            if(dayIdx >=1 && dayIdx <=6) document.getElementById(`th-${DAYS[dayIdx-1]}`).className = 'today-header';
+
+            const tbody = document.getElementById('scheduleBody');
+            tbody.innerHTML = "";
+            const occupied = Array(DAYS.length).fill(null).map(() => Array(TIME_SLOTS.length).fill(false));
+
+            TIME_SLOTS.forEach((slot, tIdx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<th>${slot.label}<div style="font-size:0.75em; opacity:0.6; margin-top:2px">to ${parseInt(slot.label)+1}:30</div></th>`;
+
+                DAYS.forEach((day, dIdx) => {
+                    if(occupied[dIdx][tIdx]) return;
+
+                    const td = document.createElement('td');
+                    if(dIdx === (dayIdx-1)) td.className = 'today-col';
+
+                    const entry = data.schedule[`${day}-${slot.key}`];
+
+                    if(entry) {
+                        const entries = Array.isArray(entry) ? entry : [entry];
+                        
+                        if (entries.length > 1) {
+                            // Clash Block
+                            const codes = entries.map(e => e.subj).join(' / ');
+                            td.innerHTML = `
+                                <div class="clash-card">
+                                    <div style="font-size:1.2rem;">⚠️</div>
+                                    <div style="margin:4px 0;">${codes}</div>
+                                    <div style="font-size:0.75rem; opacity:0.9;">Cleared Soon</div>
+                                </div>
+                            `;
+                            // No rowspan for clashes (keep it confined to 1 hour to avoid layout breaking)
+                        } else {
+                            // Normal Block
+                            const e = entries[0];
+                            const span = e.span || 1;
+                            
+                            if(span > 1) {
+                                td.rowSpan = span;
+                                for(let i=1; i<span; i++) {
+                                    if(tIdx+i < TIME_SLOTS.length) occupied[dIdx][tIdx+i] = true;
+                                }
+                            }
+
+                            const bg = getSubjectColor(e.subj);
+                            
+                            // Header Text (e.g., "EP LAB" or "EP")
+                            let headerText = e.subj;
+                            if (e.type === 'lab') headerText += " LAB";
+
+                            td.innerHTML = `
+                                <div class="block-card" style="background: ${bg}">
+                                    <div class="block-header">${headerText}</div>
+                                    <div style="flex:1"></div>
+                                    <div class="block-room-box">${e.room}</div>
+                                </div>
+                            `;
+                        }
+                    }
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
