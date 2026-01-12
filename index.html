@@ -2,391 +2,860 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cosmic Scheduler Pro</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <title>Timetable</title>
     
     <style>
+        @import url('https://fonts.cdnfonts.com/css/cascadia-code');
+
         :root {
-            --glass-bg: rgba(20, 30, 48, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --accent-cyan: #00d2ff;
-            --accent-gold: #ffd700;
-            --text-main: #ffffff;
-            --lunch-bg: rgba(255, 215, 0, 0.1);
+            /* Light Mode */
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-sub: #7f8c8d;
+            --border: #e1e4e8;
+            --input-bg: #ffffff;
+            --shadow-soft: 0 4px 20px rgba(0,0,0,0.05);
+            --slot-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            --live-color: #2ecc71;
+            --error: #e74c3c;
+            --bar-bg: #1a1a1a;
+            --bar-text: #ffffff;
         }
 
+        /* Dark Mode */
+        body.dark-mode {
+            --primary: #ecf0f1;
+            --accent: #5dade2;
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-sub: #a0a0a0;
+            --border: #2a2a2a;
+            --input-bg: #2c2c2c;
+            --shadow-soft: 0 4px 20px rgba(0,0,0,0.4);
+            --slot-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            --bar-bg: #000000;
+        }
+        
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Exo 2', sans-serif;
-            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
             color: var(--text-main);
             margin: 0;
-            padding: 0; /* Remove padding for full mobile width */
-            min-height: 100vh;
+            padding: 0;
+            overscroll-behavior-y: none;
+            font-size: 16px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* ============================
+           LOGIN SCREEN
+           ============================ */
+        #home-page {
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            overflow-x: hidden; /* Prevent body scroll, handle in table */
+            justify-content: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #2c3e50 0%, #2980b9 100%);
         }
 
-        /* --- BACKGROUND STARS --- */
-        #stars {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
-        }
-        .star {
-            position: absolute; background: white; border-radius: 50%;
-            animation: twinkle var(--dur) ease-in-out infinite; opacity: var(--op);
-        }
-        @keyframes twinkle { 0%,100%{opacity:var(--op);transform:scale(1);} 50%{opacity:0.2;transform:scale(0.5);} }
-
-        /* --- HEADER --- */
-        header {
-            width: 95%; max-width: 1400px; margin-top: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.05);
+        .login-card {
+            background: rgba(255, 255, 255, 0.96);
             backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 12px 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            z-index: 100;
+            padding: 32px 24px;
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+            text-align: center;
+            width: 100%;
+            animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-
-        .brand h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,210,255,0.5); }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         
-        .controls { display: flex; gap: 8px; }
-        
-        input {
-            width: 140px; background: rgba(0,0,0,0.4); border: 1px solid var(--glass-border);
-            color: white; padding: 8px 12px; border-radius: 8px; outline: none; font-family: inherit; font-weight: 700;
-        }
-        
-        button {
-            background: var(--accent-cyan); color: #000; border: none;
-            padding: 8px 16px; border-radius: 8px; font-weight: 800; cursor: pointer;
-            box-shadow: 0 0 10px rgba(0,210,255,0.3);
-        }
+        body.dark-mode .login-card { background: rgba(30, 30, 30, 0.96); }
 
-        /* --- SLIDER AREA --- */
-        .slider-wrap {
-            width: 95%; max-width: 1400px; margin: 20px 0;
-            display: flex; gap: 10px; overflow-x: auto;
-            padding-bottom: 5px; scrollbar-width: none;
-        }
-        .slider-wrap::-webkit-scrollbar { display: none; }
+        .login-card h1 { margin: 0 0 8px; color: #2c3e50; font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; }
+        body.dark-mode .login-card h1 { color: #fff; }
+        .login-card p { color: #666; margin-bottom: 32px; font-size: 1rem; }
+        body.dark-mode .login-card p { color: #aaa; }
 
-        .sub-pill {
-            flex-shrink: 0; background: rgba(255,255,255,0.08);
-            border: 1px solid var(--glass-border);
-            padding: 8px 16px; border-radius: 30px;
-            font-size: 0.85rem; font-weight: 600;
-            display: flex; gap: 8px; align-items: center;
-            backdrop-filter: blur(4px);
+        .mis-input-wrapper {
+            display: flex; align-items: center; background: var(--input-bg);
+            border: 2px solid var(--border); border-radius: 14px; padding: 4px 16px; margin-bottom: 20px;
         }
-        .pill-dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px currentColor; }
+        .mis-input-wrapper:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2); }
+        .prefix { font-family: monospace; font-weight: 700; font-size: 1.4rem; opacity: 0.6; margin-right: 4px; }
+        .mis-input-wrapper input { border: none; background: transparent; padding: 14px 0; font-size: 1.4rem; font-family: monospace; font-weight: 700; color: var(--text-main); width: 100%; outline: none; }
 
-        /* --- TABLE CONTAINER (The Core Mobile Logic) --- */
-        .table-frame {
-            flex: 1; width: 100%; max-width: 1400px;
-            overflow: auto; /* Allow scroll */
-            position: relative;
-            background: rgba(0,0,0,0.3);
-            border-top: 1px solid var(--glass-border);
-            /* Height management for mobile */
-            height: calc(100vh - 140px); 
-        }
-
-        table {
-            border-collapse: separate; border-spacing: 0;
-            width: 100%; min-width: 800px; /* Ensure horizontal scroll on mobile */
-        }
-
-        /* --- STICKY HEADERS --- */
-        thead th {
-            position: sticky; top: 0; z-index: 50;
-            background: #141b25; /* Solid dark color to cover scrolling content */
-            color: var(--accent-cyan);
-            padding: 15px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;
-            border-bottom: 2px solid var(--accent-cyan);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        /* Top-Left Corner Fix */
-        thead th:first-child {
-            position: sticky; left: 0; z-index: 60;
-            background: #141b25;
-            border-right: 1px solid var(--glass-border);
-        }
-
-        /* --- STICKY TIME COLUMN --- */
-        tbody th {
-            position: sticky; left: 0; z-index: 40;
-            background: #141b25; /* Solid dark bg */
-            color: rgba(255,255,255,0.7);
-            padding: 10px; font-size: 0.8rem; font-weight: 700;
-            border-right: 2px solid var(--glass-border);
-            border-bottom: 1px solid var(--glass-border);
-            vertical-align: middle;
-        }
-
-        /* --- CELLS --- */
-        td {
-            border-bottom: 1px solid var(--glass-border);
-            border-right: 1px solid var(--glass-border);
-            padding: 4px; vertical-align: top;
-            height: 100px; /* Fixed height for consistency */
-            width: 14.28%; /* 7 cols (Time + 6 Days) */
-            position: relative;
-        }
-
-        /* --- LUNCH ROW STYLING --- */
-        .lunch-row th, .lunch-row td {
-            background: var(--lunch-bg) !important;
-            border-bottom: 1px solid var(--accent-gold);
-            height: 60px; /* Thinner row */
-        }
-        
-        .lunch-row th { color: var(--accent-gold); } /* Time cell color */
-
-        /* The Sticky Lunch Label */
-        .lunch-sticky {
-            position: absolute;
-            left: 0; right: 0; top: 0; bottom: 0;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; letter-spacing: 4px; color: var(--accent-gold);
-            text-shadow: 0 2px 10px black;
-            font-size: 1.2rem;
-            pointer-events: none; /* Let clicks pass through if needed */
-        }
-
-        /* --- CARDS --- */
-        .card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(4px);
-            border-radius: 8px; padding: 8px;
-            height: 100%; width: 100%;
-            display: flex; flex-direction: column; justify-content: space-between;
-            border: 1px solid rgba(255,255,255,0.1);
+        .btn-login {
+            background: var(--accent); color: white; border: none; padding: 18px 0; width: 100%;
+            border-radius: 14px; font-size: 1.1rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.3);
             transition: transform 0.2s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        .card:hover { transform: scale(1.03); background: rgba(255,255,255,0.2); z-index: 20; position: relative; }
+        .btn-login:active { transform: scale(0.96); }
+        .error-msg { color: var(--error); margin-top: 20px; font-weight: 600; display: none; background: rgba(231, 76, 60, 0.1); padding: 12px; border-radius: 12px; }
 
-        .card-head { font-weight: 800; font-size: 0.95rem; display: flex; justify-content: space-between; text-shadow: 0 2px 2px rgba(0,0,0,0.5); }
-        .card-room { 
-            align-self: flex-start;
-            background: #fff; color: #000;
-            font-size: 0.75rem; font-weight: 800;
-            padding: 2px 6px; border-radius: 4px;
+        /* ============================
+           DASHBOARD HEADER
+           ============================ */
+        .container { padding: 12px 12px 80px 12px; max-width: 100%; }
+
+        header {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .clash-box {
-            background: rgba(255, 69, 58, 0.2); border: 2px solid #ff453a;
-            color: #ff453a; height: 100%; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; font-weight: 700;
-            border-radius: 8px; animation: pulse 2s infinite;
+        .header-top {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Empty State */
-        .intro-msg {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            text-align: center; width: 80%;
+        .profile-info h1 { margin: 0; font-size: 1.3rem; color: var(--text-main); }
+        .profile-info p { margin: 2px 0 0; color: var(--text-sub); font-size: 0.85rem; font-family: monospace; }
+
+        .theme-btn {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .status-bar {
+            background: var(--bar-bg);
+            color: var(--bar-text);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        #clock {
+            font-family: 'Cascadia Code', monospace;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ============================
+           CARDS
+           ============================ */
+        .cards {
+            display: flex; gap: 12px; overflow-x: auto; padding: 4px 4px 20px 4px;
+            scroll-snap-type: x mandatory; margin: 0 -12px 10px -12px; padding-left: 12px; padding-right: 12px;
+        }
+        .cards::-webkit-scrollbar { display: none; }
+
+        .card {
+            background: var(--card-bg);
+            min-width: 120px;
+            padding: 15px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--border); 
+            border-bottom-width: 5px;
+            border-right-width: 5px; 
+            box-shadow: var(--shadow-soft);
+            scroll-snap-align: start;
+            flex-shrink: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; 
+            min-height: 140px;
         }
         
+        .card-top-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card h3 { 
+            font-size: 0.75rem; color: var(--text-sub); margin: 0; 
+            text-transform: uppercase; letter-spacing: 0.5px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        
+        .card .subject { font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
+        
+        .card .detail { 
+            background: #fff; color: #333; font-size: 0.8rem; font-weight: 700; 
+            padding: 4px 8px; border-radius: 6px; display: inline-block; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1); border: 1px solid #eee;
+            margin-bottom: 8px;
+        }
+
+        .batch-container {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card .batch-badge {
+            background: rgba(0,0,0,0.05); 
+            color: #000000;
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            padding: 3px 8px; 
+            border-radius: 4px; 
+            display: inline-block; 
+            border: 1px solid var(--border);
+        }
+
+        /* ============================
+           TIMETABLE & SLOTS
+           ============================ */
+        .timetable-wrapper { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-soft); overflow: hidden; position: relative; }
+        .table-scroll-container { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
+        
+        table { border-collapse: separate; border-spacing: 0; min-width: 950px; table-layout: fixed; }
+
+        th { background: var(--primary); color: #fff; padding: 12px 4px; font-size: 0.8rem; text-transform: uppercase; position: sticky; top: 0; z-index: 20; }
+        body.dark-mode th { color: #121212; }
+
+        .time-col { 
+            position: sticky; left: 0; background: var(--card-bg); width: 85px; z-index: 25; 
+            border-right: 1px solid var(--border); font-size: 0.75rem; font-weight: 700; 
+            color: var(--text-sub); text-align: center; padding: 0 4px; 
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: center;
+        }
+        td.time-col-cell { padding: 0; height: 140px; } 
+
+        th:first-child { position: sticky; left: 0; z-index: 30; background: var(--primary); width: 85px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+
+        td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); padding: 6px; vertical-align: top; height: 140px; }
+        
+        th:not(:first-child), td:not(.time-col-cell) { width: calc((100% - 85px) / 6); min-width: 145px; }
+
+        .slot, .split-item { 
+            height: 100%; width: 100%; border-radius: 10px; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; position: relative; padding: 28px 4px 8px 4px; 
+            box-shadow: var(--slot-shadow); overflow: visible; 
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+        }
+        
+        .slot:hover, .split-item:hover {
+            transform: translateY(-6px) scale(1.03);
+            z-index: 50;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .slot-collision { background: transparent; box-shadow: none; padding: 0; pointer-events: none; }
+        .slot-split { display: flex; width: 100%; height: 100%; gap: 4px; pointer-events: auto; }
+        .split-item { flex: 1; min-width: 0; font-size: 0.9em; }
+
+        .slot-title { font-weight: 800; font-size: 1.2rem; margin-bottom: 4px; line-height: 1.1; }
+        .room-tag { background: rgba(255,255,255,0.85); color: #000; font-size: 0.85rem; font-weight: 700; padding: 4px 8px; border-radius: 6px; display: inline-block; }
+        
+        .lab-tag { 
+            position: absolute; 
+            top: 4px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 2rem; 
+            line-height: 1;
+            z-index: 5;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+        }
+
+        /* ============================
+           UPDATED LUNCH BREAK STYLING
+           ============================ */
+        .break { 
+            background: linear-gradient(120deg, var(--bg) 0%, var(--card-bg) 50%, var(--bg) 100%);
+            background-size: 200% 200%;
+            /* Cascadia Code + Larger Font */
+            font-family: 'Cascadia Code', monospace; 
+            font-weight: 600; 
+            font-size: 1.5rem; /* Larger Text */
+            color: var(--text-sub); 
+            vertical-align: middle; 
+            text-align: center; 
+            position: relative; 
+            overflow: hidden;
+            height: 180px; /* INCREASED HEIGHT */
+        }
+        
+        #lunch-break.lunch-now { 
+            border: 2px solid var(--accent); 
+            /* Breathing background */
+            animation: lunchBreath 4s ease infinite; 
+        }
+        @keyframes lunchBreath { 
+            0% { background-position: 0% 50%; box-shadow: inset 0 0 15px rgba(52,152,219,0.05); } 
+            50% { background-position: 100% 50%; box-shadow: inset 0 0 30px rgba(52,152,219,0.2); } 
+            100% { background-position: 0% 50%; box-shadow: inset 0 0 15px rgba(52,152,219,0.05); } 
+        }
+
+        /* Lunch Emojis - Initial State */
+        .lunch-emoji {
+            position: absolute; 
+            pointer-events: none; 
+            user-select: none;
+            bottom: -50px; /* Start well below */
+            font-size: 0.8rem; /* Start Small */
+            /* No Animation defined here, we do it in JS for collision logic */
+            transition: opacity 0.2s;
+            z-index: 4;
+        }
+
+        /* The Burst Animation Class */
+        .emoji-burst {
+            animation: burstPop 0.3s ease-out forwards;
+        }
+        @keyframes burstPop {
+            0% { transform: scale(1.2); opacity: 1; }
+            50% { transform: scale(1.8); opacity: 0.8; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        .lb-text { 
+            position: relative; 
+            z-index: 10; /* High Z-index to trigger collision */
+            background: rgba(255,255,255,0.95); 
+            padding: 12px 24px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .current-day-col { background-color: rgba(52, 152, 219, 0.05); }
+        th.current-day-col { background-color: #34495e; border-bottom: 3px solid var(--accent); }
+        
+        .live-active { 
+            box-shadow: 0 0 0 3px var(--live-color); 
+            z-index: 10;
+        }
+        .live-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--live-color);
+            color: white;
+            font-family: 'Cascadia Code', 'Courier New', monospace;
+            font-weight: 600; 
+            font-size: 0.85rem;
+            padding: 2px 12px;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(46, 204, 113, 0.3);
+            z-index: 60;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Snowfall */
+        .snowfall { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0.5; z-index: 2; }
+        .snowflake { position: absolute; color: white; animation: fall linear infinite; }
+        @keyframes fall { to { transform: translateY(180px); } }
+
+        footer { 
+            text-align: center; 
+            font-family: 'Cascadia Code', monospace; 
+            font-size: 1rem; 
+            color: var(--text-sub); 
+            margin-top: 30px; 
+            font-weight: 600; 
+            letter-spacing: 0.5px;
+            padding-bottom: 20px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="stars"></div>
-
-    <header>
-        <div class="brand">
-            <h1>Cosmic Scheduler</h1>
+    <div id="home-page">
+        <div class="login-card">
+            <h1>🗓️ Timetable</h1>
+            <p>Mobile Edition (Sem II)</p>
+            <div style="text-align:left; font-weight:600; margin-bottom:8px; color:var(--text-main); font-size:0.9rem;">MIS Number</div>
+            <div class="mis-input-wrapper">
+                <span class="prefix">6125</span>
+                <input type="tel" id="mis-input" placeholder="*****" maxlength="5" autocomplete="off" inputmode="numeric">
+            </div>
+            <button class="btn-login" onclick="attemptLogin()">VIEW SCHEDULE</button>
+            <div class="error-msg" id="error-msg">❌ Invalid MIS</div>
         </div>
-        <div class="controls">
-            <input type="tel" id="misInput" placeholder="MIS ID..." onkeypress="handleEnter(event)">
-            <button onclick="renderTimetable()">GO</button>
+        <div style="position: absolute; bottom: 20px; color: rgba(255,255,255,0.6); font-size: 0.75rem; text-align: center; width: 100%; left:0;">
+            Created by Ajinkya Patil [AIML]
         </div>
-    </header>
-
-    <div class="slider-wrap" id="subjectBar" style="display:none;"></div>
-
-    <div class="table-frame" id="tableFrame" style="display:none;">
-        <table id="mainTable">
-            <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th>
-                </tr>
-            </thead>
-            <tbody id="scheduleBody">
-                </tbody>
-        </table>
     </div>
 
-    <div id="intro" class="intro-msg">
-        <h2 style="font-size: 2rem; margin-bottom: 10px;">🌌 Ready?</h2>
-        <p style="opacity: 0.8;">Enter your MIS ID to launch your timetable.</p>
-    </div>
+    <div id="timetable-page" class="hidden">
+        <div class="container">
+            <header>
+                <div class="header-top">
+                    <div class="profile-info">
+                        <h1 id="user-name-display">Student</h1>
+                        <p id="user-details-display">MIS: ---</p>
+                    </div>
+                    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" aria-label="Toggle Theme">🌑</button>
+                </div>
+                <div class="status-bar">
+                    <div id="clock">--:--:--</div>
+                    <button class="logout-btn" onclick="logout()">EXIT</button>
+                </div>
+            </header>
 
-    <script src="students.js"></script>
-    <script src="logic.js"></script>
+            <div class="cards" id="subject-cards-container"></div>
 
-    <script>
-        /* --- 1. STARS BACKGROUND --- */
-        function initStars() {
-            const wrap = document.getElementById('stars');
-            for(let i=0; i<100; i++) {
-                const s = document.createElement('div');
-                s.className = 'star';
-                const xy = [Math.random()*100, Math.random()*100];
-                const dur = Math.random() * 3 + 2;
-                const op = Math.random();
-                const size = Math.random() * 2;
-                s.style.cssText = `left:${xy[0]}%; top:${xy[1]}%; width:${size}px; height:${size}px; --dur:${dur}s; --op:${op};`;
-                wrap.appendChild(s);
-            }
-        }
-        initStars();
-
-        /* --- 2. LOGIC --- */
-        const TIME_SLOTS = [
-            { key: "0830", label: "08:30" }, 
-            { key: "0930", label: "09:30" }, 
-            { key: "1030", label: "10:30" }, 
-            { key: "1130", label: "11:30" }, 
-            { key: "1230", label: "12:30", type: "LUNCH" }, 
-            { key: "1330", label: "01:30" }, 
-            { key: "1430", label: "02:30" }, 
-            { key: "1530", label: "03:30" }, 
-            { key: "1630", label: "04:30" }, 
-            { key: "1730", label: "05:30" }
-        ];
-        const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat"];
-
-        // Neon Palette for subjects
-        const NEON_COLORS = [
-            "#ff9ff3", "#feca57", "#ff6b6b", "#48dbfb", "#1dd1a1", "#f368e0", "#00d2d3", "#54a0ff", "#5f27cd"
-        ];
-        
-        function getColor(str) {
-            let hash = 0;
-            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-            return NEON_COLORS[Math.abs(hash) % NEON_COLORS.length];
-        }
-
-        function handleEnter(e) { if(e.key === 'Enter') renderTimetable(); }
-
-        function renderTimetable() {
-            const mis = document.getElementById('misInput').value.trim();
-            if(!mis) return alert("Please enter MIS ID");
+            <div class="timetable-wrapper">
+                <div class="table-scroll-container">
+                    <table id="main-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th id="th-mon">Mon</th>
+                                <th id="th-tue">Tue</th>
+                                <th id="th-wed">Wed</th>
+                                <th id="th-thu">Thu</th>
+                                <th id="th-fri">Fri</th>
+                                <th id="th-sat">Sat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+            </div>
             
-            if(typeof getStudentData !== 'function') return alert("Error: logic.js missing");
-            const data = getStudentData(mis);
-            if(!data) return alert("Student not found");
+            <footer>Designed by Ajinkya Patil [AIML]</footer>
+        </div>
+    </div>
 
-            // UI Reveal
-            document.getElementById('intro').style.display = 'none';
-            document.getElementById('tableFrame').style.display = 'block';
-            document.getElementById('subjectBar').style.display = 'flex';
+<script src="students.js"></script>
+<script src="logic.js"></script>
 
-            // 1. Render Subject Bar
-            const bar = document.getElementById('subjectBar');
-            bar.innerHTML = "";
-            if(data.cards) {
-                data.cards.forEach(c => {
-                    const col = getColor(c.code);
-                    bar.innerHTML += `
-                        <div class="sub-pill" style="border-color:${col}">
-                            <div class="pill-dot" style="color:${col}; background:${col}"></div>
-                            <span>${c.code}</span>
+<script>
+    // Global Config
+    window.GROUP_COLOR_MAP = {
+        blueGroup: { codes: ['EP','QP','EC'], color: '#2980b9', bg: '#EAF4FF' },
+        purpleGroup: { codes: ['PS','VCDE'], color: '#8e44ad', bg: '#F4ECF7' },
+        ochreGroup: { codes: ['BCE','FPI','AIMA','EEU','AEIOT','FMS','FME','BMT','NM'], color: '#f39c12', bg: '#FFF4E0' },
+        tealGroup: { codes: ['IPSSF','EM','FEET','DS','EEMI','BMS','CAED','FFR'], color: '#16a085', bg: '#E8F8F5' },
+        redGroup: { codes: ['PD','CS'], color: '#c0392b', bg: '#FDEDEC' },
+        slateGroup: { codes: ['GE','FCP','PPS','WD','EW','DPI','DPV','CAD','EVA','MPFL','RDOS','PP'], color: '#34495e', bg: '#F2F4F6' }
+    };
+
+    let clockInterval;
+    let currentUserSchedule = null;
+
+    // Helpers
+    const getGroupData = (code) => {
+        for (const key in window.GROUP_COLOR_MAP) {
+            if (window.GROUP_COLOR_MAP[key].codes.includes(code)) return window.GROUP_COLOR_MAP[key];
+        }
+        return null;
+    };
+
+    const hexToRgba = (hex, alpha) => {
+        if (!hex) return '';
+        const h = hex.replace('#','');
+        const bigint = parseInt(h, 16);
+        return `rgba(${(bigint >> 16) & 255}, ${(bigint >> 8) & 255}, ${bigint & 255}, ${alpha})`;
+    };
+
+    const readableTextColor = (hex) => {
+        if (!hex) return '#111';
+        const h = hex.replace('#','');
+        const b = parseInt(h, 16);
+        const brightness = (((b >> 16) & 255) * 299 + ((b >> 8) & 255) * 587 + (b & 255) * 114) / 1000;
+        return brightness > 180 ? '#111' : '#ffffff';
+    };
+
+    // Initialization
+    window.onload = function() {
+        if(localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('theme-btn').innerText = '💡';
+        }
+        
+        const savedUser = localStorage.getItem('currentUserMIS');
+        if(savedUser && typeof getStudentData === "function") {
+            const data = getStudentData(savedUser);
+            if(data) loadDashboard(data);
+        }
+    };
+
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        document.getElementById('theme-btn').innerText = isDark ? '💡' : '🌑';
+    }
+
+    // Login
+    const misInput = document.getElementById('mis-input');
+    misInput.addEventListener("keypress", (e) => { if (e.key === "Enter") attemptLogin(); });
+
+    function attemptLogin() {
+        const val = misInput.value.trim();
+        if(!val) return;
+        const fullMis = val.length === 9 ? val : "6125" + val;
+        
+        if (typeof getStudentData !== "function") {
+            alert("JS Files missing"); return;
+        }
+
+        const data = getStudentData(fullMis);
+        if (data) {
+            localStorage.setItem('currentUserMIS', fullMis);
+            loadDashboard(data);
+        } else {
+            const msg = document.getElementById('error-msg');
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 2000);
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem('currentUserMIS');
+        location.reload();
+    }
+
+    function loadDashboard(data) {
+        document.getElementById('home-page').classList.add('hidden');
+        document.getElementById('timetable-page').classList.remove('hidden');
+
+        // Start Clock immediately
+        if (clockInterval) clearInterval(clockInterval);
+        updateClock();
+        clockInterval = setInterval(updateClock, 1000);
+
+        // Populate Header
+        document.getElementById('user-name-display').innerText = data.name || "Student";
+        document.getElementById('user-details-display').innerHTML = data.info || `MIS: ${data.mis}`;
+
+        // Populate Cards (Top Strip)
+        const container = document.getElementById('subject-cards-container');
+        container.innerHTML = "";
+        if (data.cards) {
+            data.cards.forEach(c => {
+                const group = getGroupData(c.code);
+                const color = (group && group.color) || c.color || '#ccc';
+                const bg = (group && group.bg) || hexToRgba(color, 0.1);
+                
+                const batchHtml = (c.batch && c.batch !== '-') 
+                    ? `<div class="batch-badge">Batch: ${c.batch}</div>` 
+                    : '';
+
+                container.innerHTML += `
+                    <div class="card" style="border-color:${color}; border-bottom-color:${color}; border-right-color:${color}; background:${bg}">
+                        <div class="card-top-content">
+                            <h3>${c.name}</h3>
+                            <div class="subject" style="color:${color}">${c.code}</div>
                         </div>
-                    `;
-                });
-            }
-
-            // 2. Render Table
-            const tbody = document.getElementById('scheduleBody');
-            tbody.innerHTML = "";
-            const occupied = Array(DAYS.length).fill(null).map(() => Array(TIME_SLOTS.length).fill(false));
-
-            TIME_SLOTS.forEach((slot, tIdx) => {
-                const tr = document.createElement('tr');
-                if(slot.type === 'LUNCH') tr.className = 'lunch-row';
-
-                // Sticky Time Cell
-                const th = document.createElement('th');
-                th.textContent = slot.label;
-                tr.appendChild(th);
-
-                DAYS.forEach((day, dIdx) => {
-                    if(occupied[dIdx][tIdx]) return;
-
-                    const td = document.createElement('td');
-                    
-                    // --- LUNCH LOGIC ---
-                    if(slot.type === 'LUNCH') {
-                        // Check if a class actually exists here (override lunch)
-                        const entry = data.schedule[`${day}-${slot.key}`];
-                        if(!entry) {
-                            // If middle column (approx), add sticky label? 
-                            // Easier: Just add the label in the 3rd or 4th cell ONLY, or use a pseudo element.
-                            // Better mobile approach: Put label in ALL cells but hide overflow?
-                            // Let's use the 'sticky' div trick inside the TD
-                            if(dIdx === 0) { // Only inject sticky label once in the first cell, but span it? No.
-                                // We inject a sticky container in EVERY empty lunch cell to ensure visibility?
-                                // Actually, standard practice: leave empty, css background handles it. 
-                                // But user wants text.
-                                td.innerHTML = `<div class="lunch-sticky">LUNCH BREAK</div>`;
-                            } else {
-                                td.innerHTML = `<div class="lunch-sticky" style="display:none"></div>`; // Hide dupes or rely on the first one if we span
-                            }
-                            // Span logic: If we want one big row, we can merge cells.
-                            // But keeping cells separate is safer for existing logic unless we rewrite occupied matrix.
-                            // Let's just put the text in the middle cell (Wed/Thu)
-                            if(dIdx === 2) td.innerHTML = `<div class="lunch-sticky" style="width:200%; margin-left:-50%">LUNCH BREAK</div>`;
-                        }
-                    }
-
-                    // --- CLASS LOGIC ---
-                    const entry = data.schedule[`${day}-${slot.key}`];
-
-                    if(entry) {
-                        const entries = Array.isArray(entry) ? entry : [entry];
-                        
-                        if(entries.length > 1) {
-                            // Clash
-                            td.innerHTML = `<div class="clash-box"><div>⚡ CLASH</div><div style="font-size:0.7rem">${entries.length} Classes</div></div>`;
-                        } else {
-                            const e = entries[0];
-                            const span = e.span || 1;
-                            
-                            if(span > 1) {
-                                td.rowSpan = span;
-                                for(let i=1; i<span; i++) occupied[dIdx][tIdx+i] = true;
-                            }
-
-                            const col = getColor(e.subj);
-                            const title = e.type === 'lab' ? `${e.subj} (L)` : e.subj;
-                            
-                            td.innerHTML = `
-                                <div class="card" style="border-top: 3px solid ${col}">
-                                    <div class="card-head">
-                                        <span style="color:${col}">${title}</span>
-                                    </div>
-                                    <div class="card-room">${e.room}</div>
-                                </div>
-                            `;
-                        }
-                    }
-                    tr.appendChild(td);
-                });
-                tbody.appendChild(tr);
+                        <div>
+                            <div class="detail">${c.div}</div>
+                            <div class="batch-container">
+                                ${batchHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
         }
-    </script>
+
+        renderTable(data);
+        currentUserSchedule = data.schedule;
+    }
+
+    function renderTable(data) {
+        const schedule = data.schedule || {};
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = "";
+        
+        const slots = [
+            { id: "0830", label: "8:30 - 9:30" }, { id: "0930", label: "9:30 - 10:30" },
+            { id: "1030", label: "10:30 - 11:30" }, { id: "1130", label: "11:30 - 12:30" },
+            { id: "1230", label: "12:30 - 1:30" }, { id: "1330", label: "1:30 - 2:30" },
+            { id: "1430", label: "2:30 - 3:30" }, { id: "1530", label: "3:30 - 4:30" },
+            { id: "1630", label: "4:30 - 5:30" }, { id: "1730", label: "5:30 - 6:30" }
+        ];
+        const days = ["mon", "tue", "wed", "thu", "fri", "sat"];
+        const skipped = {};
+
+        slots.forEach((slot, idx) => {
+            if (slot.id === "1230") {
+                const hasClass = days.some(d => schedule[`${d}-1230`]);
+                if (!hasClass) {
+                    tbody.innerHTML += `<tr><td class="time-col time-col-cell"><div class="time-col">${slot.label}</div></td><td colspan="6" class="break" id="lunch-break"><span class="lb-text">LUNCH BREAK</span></td></tr>`;
+                    return;
+                }
+            }
+
+            let rowHtml = `<tr><td class="time-col time-col-cell"><div class="time-col">${slot.label}</div></td>`;
+
+            days.forEach(day => {
+                const key = `${day}-${slot.id}`;
+                if (skipped[`${day}-${idx}`]) return;
+
+                const item = schedule[key];
+                
+                if (slot.id === "1230" && !item) {
+                    rowHtml += `<td class="break" style="font-size:0.8rem">LUNCH</td>`;
+                    return;
+                }
+
+                if (item) {
+                    if (Array.isArray(item)) {
+                        const maxSpan = Math.max(...item.map(i => i.span || 1));
+                        for(let i=1; i<maxSpan; i++) skipped[`${day}-${idx+i}`] = true;
+                        
+                        rowHtml += `<td rowspan="${maxSpan}"><div class="slot slot-collision" id="${key}"><div class="slot-split">`;
+                        item.forEach(it => {
+                             const group = getGroupData(it.subj);
+                             const color = (group && group.color) || '#7f8c8d';
+                             const bg = (group && group.bg) || hexToRgba(color, 0.15);
+                             const textColor = readableTextColor(color);
+                             const emoji = it.tag || ((it.type === 'lab' && typeof getLabEmoji === 'function') ? getLabEmoji(it.subj, it.room) : '');
+                             
+                             rowHtml += `<div class="split-item" style="background:${bg}; border-left:4px solid ${color}; color:${textColor}">
+                                ${emoji ? `<span class="lab-tag">${emoji}</span>` : ''}
+                                <div class="slot-title" style="color:${color}; font-size:1rem">${it.subj}</div>
+                                <span class="room-tag" style="font-size:0.75rem">${it.room}</span>
+                             </div>`;
+                        });
+                        rowHtml += `</div></div></td>`;
+                    } else {
+                        const span = item.span || 1;
+                        for(let i=1; i<span; i++) skipped[`${day}-${idx+i}`] = true;
+                        
+                        const group = getGroupData(item.subj);
+                        const color = (group && group.color) || '#7f8c8d';
+                        const bg = (group && group.bg) || hexToRgba(color, 0.15);
+                        const textColor = readableTextColor(color);
+                        const emoji = item.tag || ((item.type === 'lab' && typeof getLabEmoji === 'function') ? getLabEmoji(item.subj, item.room) : '');
+
+                        rowHtml += `<td rowspan="${span}">
+                        <div class="slot ${item.class||''}" id="${key}" style="background:${bg}; border-left:4px solid ${color}; color:${textColor}">
+                            ${emoji ? `<span class="lab-tag">${emoji}</span>` : ''}
+                            <div class="slot-title" style="color:${color}">${item.subj}${item.type==='lab'?' LAB':''}</div>
+                            <span class="room-tag">${item.room}</span>
+                        </div></td>`;
+                    }
+                } else {
+                    rowHtml += `<td></td>`;
+                }
+            });
+            rowHtml += `</tr>`;
+            tbody.innerHTML += rowHtml;
+        });
+    }
+
+    // ============================================
+    // UPDATED ANIMATION LOGIC FOR LUNCH
+    // ============================================
+    let activeEmojis = [];
+
+    function updateLunchAnimation() {
+        const lb = document.getElementById('lunch-break');
+        if (!lb || !lb.classList.contains('lunch-now')) {
+            // Cleanup if lunch is over
+            activeEmojis.forEach(obj => obj.el.remove());
+            activeEmojis = [];
+            return;
+        }
+
+        const lbRect = lb.getBoundingClientRect();
+        const textEl = lb.querySelector('.lb-text');
+        const textRect = textEl ? textEl.getBoundingClientRect() : null;
+
+        // 1. Randomly Spawn Emoji
+        if (activeEmojis.length < 15 && Math.random() < 0.08) { // Max 15 emojis, 8% spawn chance per tick
+            const em = document.createElement('div');
+            em.className = 'lunch-emoji';
+            em.innerText = '🍽️';
+            
+            // Random start position (X), Random Size
+            const startX = Math.random() * (lb.clientWidth - 30); 
+            const size = 0.8 + Math.random() * 0.8; // 0.8rem to 1.6rem
+            
+            em.style.left = startX + 'px';
+            em.style.fontSize = size + 'rem';
+            
+            lb.appendChild(em);
+
+            activeEmojis.push({
+                el: em,
+                y: -40, // Start below bottom
+                speed: 1 + Math.random() * 1.5, // Random speed
+                wobble: Math.random() * Math.PI * 2
+            });
+        }
+
+        // 2. Move & Check Collision
+        for (let i = activeEmojis.length - 1; i >= 0; i--) {
+            const obj = activeEmojis[i];
+            
+            // Move Up
+            obj.y += obj.speed;
+            obj.wobble += 0.05;
+            const xOffset = Math.sin(obj.wobble) * 10; // Gentle sine wave wobble
+            
+            obj.el.style.transform = `translate(${xOffset}px, -${obj.y}px)`;
+
+            // Get Current Emoji Screen Position for collision check
+            const emRect = obj.el.getBoundingClientRect();
+
+            // COLLISION CHECK: Bubble vs Text Box
+            if (textRect && 
+                emRect.top < textRect.bottom &&
+                emRect.bottom > textRect.top &&
+                emRect.right > textRect.left &&
+                emRect.left < textRect.right) {
+                
+                // BURST!
+                obj.el.classList.add('emoji-burst');
+                // Remove from tracking immediately so we don't move it anymore
+                activeEmojis.splice(i, 1);
+                // Remove from DOM after animation finishes
+                setTimeout(() => { if(obj.el.parentNode) obj.el.remove(); }, 300);
+                continue;
+            }
+
+            // Fading at top logic
+            if (obj.y > lbRect.height - 40) {
+                 obj.el.style.opacity = Math.max(0, 1 - (obj.y - (lbRect.height - 40)) / 40);
+            }
+
+            // Remove if off screen top
+            if (obj.y > lbRect.height + 20) {
+                obj.el.remove();
+                activeEmojis.splice(i, 1);
+            }
+        }
+    }
+
+    function updateClock() {
+        const now = new Date();
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const dayIdx = now.getDay();
+        
+        const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute:'2-digit', second: '2-digit' });
+        const clockEl = document.getElementById('clock');
+        if(clockEl) clockEl.innerText = `${days[dayIdx]}, ${timeStr}`;
+
+        document.querySelectorAll('.live-active').forEach(el => {
+            el.classList.remove('live-active');
+            const b = el.querySelector('.live-badge');
+            if(b) b.remove();
+            const s = el.querySelector('.snowfall');
+            if(s) s.remove();
+        });
+        document.querySelectorAll('.current-day-col').forEach(el => el.classList.remove('current-day-col'));
+
+        const lb = document.getElementById('lunch-break');
+
+        if (dayIdx === 0 || !currentUserSchedule) return; 
+
+        const dayName = days[dayIdx].toLowerCase();
+        const th = document.getElementById(`th-${dayName}`);
+        if(th) th.classList.add('current-day-col');
+
+        const min = now.getHours() * 60 + now.getMinutes();
+        let slotId = null;
+        
+        if (min >= 510 && min < 570) slotId = "0830";
+        else if (min >= 570 && min < 630) slotId = "0930";
+        else if (min >= 630 && min < 690) slotId = "1030";
+        else if (min >= 690 && min < 750) slotId = "1130";
+        else if (min >= 750 && min < 810) slotId = "1230"; 
+        else if (min >= 810 && min < 870) slotId = "1330";
+        else if (min >= 870 && min < 930) slotId = "1430";
+        else if (min >= 930 && min < 990) slotId = "1530";
+        else if (min >= 990 && min < 1050) slotId = "1630";
+        else if (min >= 1050 && min < 1110) slotId = "1730";
+
+        // Handle Lunch
+        if (slotId === '1230' && lb) {
+             if (!lb.classList.contains('lunch-now')) lb.classList.add('lunch-now');
+             // Trigger animation frame
+             requestAnimationFrame(updateLunchAnimation);
+        } else {
+            if (lb && lb.classList.contains('lunch-now')) {
+                lb.classList.remove('lunch-now');
+                // Cleanup one last time
+                updateLunchAnimation();
+            }
+        }
+
+        if (slotId && slotId !== '1230') {
+            let key = `${dayName}-${slotId}`;
+            let el = document.getElementById(key);
+            
+            if (!el) {
+                const allIds = ["0830","0930","1030","1130","1230","1330","1430","1530","1630","1730"];
+                const currIdx = allIds.indexOf(slotId);
+                if (currIdx > 0) {
+                      const prevId = allIds[currIdx-1];
+                      const prevKey = `${dayName}-${prevId}`;
+                      const prevItem = currentUserSchedule[prevKey];
+                      if (prevItem && prevItem.span === 2) el = document.getElementById(prevKey);
+                }
+            }
+
+            if (el) {
+                el.classList.add('live-active');
+                
+                if (!el.querySelector('.live-badge')) {
+                    const badge = document.createElement('div');
+                    badge.className = 'live-badge';
+                    badge.innerText = 'LIVE';
+                    el.appendChild(badge);
+                }
+
+                if (!el.querySelector('.snowfall')) {
+                    const snow = document.createElement('div');
+                    snow.className = 'snowfall';
+                    for(let i=0; i<8; i++) {
+                        const flake = document.createElement('div');
+                        flake.className = 'snowflake';
+                        flake.innerText = '❄️';
+                        flake.style.left = Math.random()*100 + '%';
+                        flake.style.animationDuration = (3+Math.random()*5)+'s';
+                        flake.style.opacity = 0.6;
+                        flake.style.fontSize = (10+Math.random()*10)+'px';
+                        snow.appendChild(flake);
+                    }
+                    el.appendChild(snow);
+                }
+            }
+        }
+    }
+</script>
 </body>
 </html>
