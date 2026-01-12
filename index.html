@@ -75,6 +75,8 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.25);
             text-align: center;
             width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
             animation: slideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -106,7 +108,7 @@
         /* ============================
            DASHBOARD HEADER
            ============================ */
-        .container { padding: 12px 12px 80px 12px; max-width: 100%; }
+        .container { padding: 12px 12px 80px 12px; max-width: 1600px; margin: 0 auto; }
 
         header {
             background: var(--card-bg);
@@ -241,25 +243,31 @@
         .timetable-wrapper { background: var(--card-bg); border-radius: 16px; box-shadow: var(--shadow-soft); overflow: hidden; position: relative; }
         .table-scroll-container { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; }
         
-        table { border-collapse: separate; border-spacing: 0; min-width: 950px; table-layout: fixed; }
+        /* UPDATED: Increased Width of Time Column & Table Scaling */
+        /* Min-width ensures scrolling on mobile. Width 100% ensures it fills laptop screens */
+        table { border-collapse: separate; border-spacing: 0; min-width: 950px; width: 100%; table-layout: fixed; }
 
         th { background: var(--primary); color: #fff; padding: 12px 4px; font-size: 0.8rem; text-transform: uppercase; position: sticky; top: 0; z-index: 20; }
         body.dark-mode th { color: #121212; }
 
+        /* INCREASED WIDTH TO 115px */
         .time-col { 
-            position: sticky; left: 0; background: var(--card-bg); width: 85px; z-index: 25; 
+            position: sticky; left: 0; background: var(--card-bg); width: 115px; z-index: 25; 
             border-right: 1px solid var(--border); font-size: 0.75rem; font-weight: 700; 
             color: var(--text-sub); text-align: center; padding: 0 4px; 
             box-shadow: 2px 0 5px rgba(0,0,0,0.05);
             display: flex; align-items: center; justify-content: center;
+            white-space: nowrap; /* Prevent breaking */
         }
         td.time-col-cell { padding: 0; height: 140px; } 
 
-        th:first-child { position: sticky; left: 0; z-index: 30; background: var(--primary); width: 85px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+        /* UPDATED FIRST CHILD WIDTH */
+        th:first-child { position: sticky; left: 0; z-index: 30; background: var(--primary); width: 115px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
 
         td { border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); padding: 6px; vertical-align: top; height: 140px; }
         
-        th:not(:first-child), td:not(.time-col-cell) { width: calc((100% - 85px) / 6); min-width: 145px; }
+        /* CALC UPDATED FOR 115px */
+        th:not(:first-child), td:not(.time-col-cell) { width: calc((100% - 115px) / 6); min-width: 140px; }
 
         .slot, .split-item { 
             height: 100%; width: 100%; border-radius: 10px; 
@@ -294,26 +302,25 @@
         }
 
         /* ============================
-           UPDATED LUNCH BREAK STYLING
+           LUNCH BREAK STYLING (HEIGHT FIX)
            ============================ */
         .break { 
             background: linear-gradient(120deg, var(--bg) 0%, var(--card-bg) 50%, var(--bg) 100%);
             background-size: 200% 200%;
-            /* Cascadia Code + Larger Font */
             font-family: 'Cascadia Code', monospace; 
             font-weight: 600; 
-            font-size: 1.5rem; /* Larger Text */
+            font-size: 1.5rem; 
             color: var(--text-sub); 
             vertical-align: middle; 
             text-align: center; 
             position: relative; 
             overflow: hidden;
-            height: 180px; /* INCREASED HEIGHT */
+            /* HEIGHT RESTORED TO STANDARD */
+            height: 140px; 
         }
         
         #lunch-break.lunch-now { 
             border: 2px solid var(--accent); 
-            /* Breathing background */
             animation: lunchBreath 4s ease infinite; 
         }
         @keyframes lunchBreath { 
@@ -322,19 +329,16 @@
             100% { background-position: 0% 50%; box-shadow: inset 0 0 15px rgba(52,152,219,0.05); } 
         }
 
-        /* Lunch Emojis - Initial State */
         .lunch-emoji {
             position: absolute; 
             pointer-events: none; 
             user-select: none;
-            bottom: -50px; /* Start well below */
-            font-size: 0.8rem; /* Start Small */
-            /* No Animation defined here, we do it in JS for collision logic */
+            bottom: -50px; 
+            font-size: 0.8rem;
             transition: opacity 0.2s;
             z-index: 4;
         }
 
-        /* The Burst Animation Class */
         .emoji-burst {
             animation: burstPop 0.3s ease-out forwards;
         }
@@ -346,9 +350,9 @@
 
         .lb-text { 
             position: relative; 
-            z-index: 10; /* High Z-index to trigger collision */
+            z-index: 10;
             background: rgba(255,255,255,0.95); 
-            padding: 12px 24px; 
+            padding: 8px 16px; 
             border-radius: 12px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
             border: 1px solid rgba(0,0,0,0.05);
@@ -379,10 +383,16 @@
             text-transform: uppercase;
         }
 
-        /* Snowfall */
+        /* UPDATED SNOWFALL: Fade out at bottom */
         .snowfall { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0.5; z-index: 2; }
         .snowflake { position: absolute; color: white; animation: fall linear infinite; }
-        @keyframes fall { to { transform: translateY(180px); } }
+        
+        /* Updated Keyframes: Fade out to opacity 0 at 90-100% */
+        @keyframes fall { 
+            0% { transform: translateY(-10px); opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(150px); opacity: 0; } 
+        }
 
         footer { 
             text-align: center; 
@@ -677,14 +687,13 @@
     }
 
     // ============================================
-    // UPDATED ANIMATION LOGIC FOR LUNCH
+    // UPDATED ANIMATION LOGIC
     // ============================================
     let activeEmojis = [];
 
     function updateLunchAnimation() {
         const lb = document.getElementById('lunch-break');
         if (!lb || !lb.classList.contains('lunch-now')) {
-            // Cleanup if lunch is over
             activeEmojis.forEach(obj => obj.el.remove());
             activeEmojis = [];
             return;
@@ -694,15 +703,14 @@
         const textEl = lb.querySelector('.lb-text');
         const textRect = textEl ? textEl.getBoundingClientRect() : null;
 
-        // 1. Randomly Spawn Emoji
-        if (activeEmojis.length < 15 && Math.random() < 0.08) { // Max 15 emojis, 8% spawn chance per tick
+        // Spawn Logic (Max 15 emojis)
+        if (activeEmojis.length < 15 && Math.random() < 0.1) { // 10% chance per tick
             const em = document.createElement('div');
             em.className = 'lunch-emoji';
             em.innerText = '🍽️';
             
-            // Random start position (X), Random Size
             const startX = Math.random() * (lb.clientWidth - 30); 
-            const size = 0.8 + Math.random() * 0.8; // 0.8rem to 1.6rem
+            const size = 0.8 + Math.random() * 0.8;
             
             em.style.left = startX + 'px';
             em.style.fontSize = size + 'rem';
@@ -711,48 +719,42 @@
 
             activeEmojis.push({
                 el: em,
-                y: -40, // Start below bottom
-                speed: 1 + Math.random() * 1.5, // Random speed
+                y: -40,
+                // INCREASED SPEED: 2 to 4.5 pixels per tick
+                speed: 2 + Math.random() * 2.5, 
                 wobble: Math.random() * Math.PI * 2
             });
         }
 
-        // 2. Move & Check Collision
+        // Move & Collision
         for (let i = activeEmojis.length - 1; i >= 0; i--) {
             const obj = activeEmojis[i];
             
-            // Move Up
             obj.y += obj.speed;
-            obj.wobble += 0.05;
-            const xOffset = Math.sin(obj.wobble) * 10; // Gentle sine wave wobble
+            obj.wobble += 0.1; // Faster wobble
+            const xOffset = Math.sin(obj.wobble) * 12; 
             
             obj.el.style.transform = `translate(${xOffset}px, -${obj.y}px)`;
 
-            // Get Current Emoji Screen Position for collision check
             const emRect = obj.el.getBoundingClientRect();
 
-            // COLLISION CHECK: Bubble vs Text Box
             if (textRect && 
                 emRect.top < textRect.bottom &&
                 emRect.bottom > textRect.top &&
                 emRect.right > textRect.left &&
                 emRect.left < textRect.right) {
                 
-                // BURST!
                 obj.el.classList.add('emoji-burst');
-                // Remove from tracking immediately so we don't move it anymore
                 activeEmojis.splice(i, 1);
-                // Remove from DOM after animation finishes
                 setTimeout(() => { if(obj.el.parentNode) obj.el.remove(); }, 300);
                 continue;
             }
 
-            // Fading at top logic
-            if (obj.y > lbRect.height - 40) {
-                 obj.el.style.opacity = Math.max(0, 1 - (obj.y - (lbRect.height - 40)) / 40);
+            // Simple fade near top
+            if (obj.y > lbRect.height - 30) {
+                 obj.el.style.opacity = Math.max(0, 1 - (obj.y - (lbRect.height - 30)) / 20);
             }
 
-            // Remove if off screen top
             if (obj.y > lbRect.height + 20) {
                 obj.el.remove();
                 activeEmojis.splice(i, 1);
@@ -803,12 +805,10 @@
         // Handle Lunch
         if (slotId === '1230' && lb) {
              if (!lb.classList.contains('lunch-now')) lb.classList.add('lunch-now');
-             // Trigger animation frame
              requestAnimationFrame(updateLunchAnimation);
         } else {
             if (lb && lb.classList.contains('lunch-now')) {
                 lb.classList.remove('lunch-now');
-                // Cleanup one last time
                 updateLunchAnimation();
             }
         }
@@ -841,14 +841,15 @@
                 if (!el.querySelector('.snowfall')) {
                     const snow = document.createElement('div');
                     snow.className = 'snowfall';
-                    for(let i=0; i<8; i++) {
+                    for(let i=0; i<10; i++) {
                         const flake = document.createElement('div');
                         flake.className = 'snowflake';
                         flake.innerText = '❄️';
                         flake.style.left = Math.random()*100 + '%';
-                        flake.style.animationDuration = (3+Math.random()*5)+'s';
-                        flake.style.opacity = 0.6;
-                        flake.style.fontSize = (10+Math.random()*10)+'px';
+                        // FASTER SNOW: 1.5s to 3.5s duration
+                        flake.style.animationDuration = (1.5+Math.random()*2)+'s';
+                        flake.style.opacity = 0.7;
+                        flake.style.fontSize = (12+Math.random()*8)+'px';
                         snow.appendChild(flake);
                     }
                     el.appendChild(snow);
