@@ -71,6 +71,63 @@
         .hidden { display: none !important; }
 
         /* ============================
+           CUSTOM NOTIFICATION TOAST
+           ============================ */
+        #custom-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--card-bg);
+            border-left: 5px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 15px 20px;
+            border-radius: 12px;
+            z-index: 9999;
+            min-width: 300px;
+            max-width: 90vw;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 15px;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            pointer-events: none;
+        }
+
+        #custom-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .toast-icon {
+            font-size: 2rem;
+            animation: ring 1s infinite ease-in-out;
+        }
+
+        @keyframes ring {
+            0% { transform: rotate(0); }
+            10% { transform: rotate(30deg); }
+            30% { transform: rotate(-28deg); }
+            50% { transform: rotate(34deg); }
+            70% { transform: rotate(-32deg); }
+            100% { transform: rotate(0); }
+        }
+
+        .toast-content { min-width: 0; }
+        .toast-content h4 { margin: 0 0 4px 0; font-size: 1rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .toast-content p { margin: 0; font-size: 0.9rem; color: var(--text-sub); }
+
+        .toast-timer {
+            font-family: 'Cascadia Code', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+            white-space: nowrap;
+        }
+
+        /* ============================
            LOGIN SCREEN
            ============================ */
         #home-page {
@@ -196,7 +253,7 @@
         .header-center {
             display: flex;
             align-items: center;
-            gap: 15px; /* Spacing between Toggle and Theme Icon */
+            gap: 15px; 
         }
 
         .theme-btn {
@@ -252,21 +309,13 @@
             height: 28px;
         }
 
-        .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+        .switch input { opacity: 0; width: 0; height: 0; }
 
         .slider {
             position: absolute;
             cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background-color: #ccc;
-            -webkit-transition: .4s;
             transition: .4s;
             border-radius: 34px;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
@@ -274,36 +323,24 @@
 
         .slider:before {
             position: absolute;
-            content: "🔕"; /* Off icon */
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            content: "🔕"; 
+            display: flex; align-items: center; justify-content: center;
             font-size: 14px;
-            height: 22px;
-            width: 22px;
-            left: 3px;
-            bottom: 3px;
+            height: 22px; width: 22px;
+            left: 3px; bottom: 3px;
             background-color: white;
-            -webkit-transition: .4s;
             transition: .4s;
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        input:checked + .slider {
-            background-color: var(--live-color);
-        }
-
+        input:checked + .slider { background-color: var(--live-color); }
         input:checked + .slider:before {
-            -webkit-transform: translateX(22px);
-            -ms-transform: translateX(22px);
             transform: translateX(22px);
-            content: "🔔"; /* On icon */
+            content: "🔔"; 
         }
         
-        /* Dark mode slider adjustment */
         body.dark-mode .slider { background-color: #444; }
-
 
         .status-bar {
             background: var(--header-bar-bg);
@@ -619,6 +656,15 @@
 </head>
 <body>
 
+    <div id="custom-toast">
+        <div class="toast-icon">🔔</div>
+        <div class="toast-content">
+            <h4 id="toast-title">Notification</h4>
+            <p id="toast-body">Message goes here</p>
+        </div>
+        <div class="toast-timer" id="toast-timer"></div>
+    </div>
+
     <div id="home-page">
         <div class="login-card">
             <h1>🗓️ Timetable</h1>
@@ -751,6 +797,13 @@
     let currentLiveSlotId = null;
     let notifiedSlots = new Set();
     let notificationsEnabled = false;
+    
+    // Audio Objects
+    const sound10 = new Audio('noti.mp3');
+    const sound5 = new Audio('noti 5.mp3');
+    
+    // Active Notification State
+    let activeNotifState = { key: null, played10: false, played5: false };
 
     // Helpers
     const getGroupData = (code) => {
@@ -844,13 +897,12 @@
         location.reload();
     }
     
-    // --- NOTIFICATION LOGIC (TOGGLE) ---
+    // --- NOTIFICATION LOGIC (CUSTOM TOAST) ---
     function initNotifications() {
-        // Load saved preference
         const savedState = localStorage.getItem('notificationsEnabled');
         const toggle = document.getElementById('notif-toggle');
         
-        if (savedState === 'true' && "Notification" in window && Notification.permission === 'granted') {
+        if (savedState === 'true') {
             notificationsEnabled = true;
             if(toggle) toggle.checked = true;
         } else {
@@ -862,38 +914,56 @@
     function toggleNotificationChange() {
         const toggle = document.getElementById('notif-toggle');
         
-        if (!("Notification" in window)) {
-            alert("This browser does not support notifications.");
-            toggle.checked = false;
-            return;
-        }
-
         if (toggle.checked) {
             // Turning ON
-            Notification.requestPermission().then(permission => {
-                if (permission === "granted") {
-                    notificationsEnabled = true;
-                    localStorage.setItem('notificationsEnabled', 'true');
-                    // Send a test notification so user knows it works
-                    new Notification("Notifications Enabled", { 
-                        body: "You will now be notified 10 minutes before classes.",
-                        icon: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔔</text></svg>"
-                    });
-                } else {
-                    notificationsEnabled = false;
-                    toggle.checked = false;
-                    alert("Permission denied. Please enable notifications in your browser settings.");
-                }
-            });
+            notificationsEnabled = true;
+            localStorage.setItem('notificationsEnabled', 'true');
+            
+            // Try to play sound immediately (user interaction unlocks audio context)
+            sound10.play().catch(e => console.log("Audio play prevented:", e));
+            
+            // Show Test Notification
+            showCustomNotification("Notifications ON", "Test success! You will hear this sound 10 mins before class.");
         } else {
             // Turning OFF
             notificationsEnabled = false;
             localStorage.setItem('notificationsEnabled', 'false');
         }
     }
+    
+    function showCustomNotification(title, body, timerStr = "", persistent = false) {
+        const toast = document.getElementById('custom-toast');
+        const tTitle = document.getElementById('toast-title');
+        const tBody = document.getElementById('toast-body');
+        const tTimer = document.getElementById('toast-timer');
+        
+        if(toast && tTitle && tBody) {
+            tTitle.innerText = title;
+            tBody.innerText = body;
+            if(tTimer) tTimer.innerText = timerStr;
+            
+            toast.classList.add('show');
+            
+            // Clear any existing timeout to hide
+            if (toast.hideTimeout) clearTimeout(toast.hideTimeout);
+
+            if (!persistent) {
+                toast.hideTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            }
+        }
+    }
+    
+    function hideCustomNotification() {
+        const toast = document.getElementById('custom-toast');
+        if(toast) {
+            toast.classList.remove('show');
+            if (toast.hideTimeout) clearTimeout(toast.hideTimeout);
+        }
+    }
 
     function checkUpcomingClasses(now) {
-        // Strict check: Only run if Toggle is ON and Schedule exists
         if (!notificationsEnabled || !currentUserSchedule) return;
 
         const currentDay = now.getDay(); 
@@ -915,61 +985,76 @@
             { id: "1730", h: 17, m: 30 }
         ];
 
-        slots.forEach(slot => {
-            const triggerTime = new Date(now);
-            triggerTime.setHours(slot.h);
-            triggerTime.setMinutes(slot.m - 10);
-            triggerTime.setSeconds(0);
-            triggerTime.setMilliseconds(0);
+        let upcomingClassFound = false;
 
-            const diff = now.getTime() - triggerTime.getTime();
+        for (const slot of slots) {
+            const startTime = new Date(now);
+            startTime.setHours(slot.h, slot.m, 0, 0);
+            
+            const diffMs = startTime.getTime() - now.getTime();
+            const diffMins = diffMs / 60000;
 
-            // Trigger window: 0 to 59 seconds past the 10-min warning mark
-            if (diff >= 0 && diff < 60000) {
+            // Check if within 10 minutes window (and strictly before start)
+            if (diffMins <= 10 && diffMins > 0) {
                 const key = `${dayStr}-${slot.id}`;
-                const uniqueNotifId = `${key}-${now.toDateString()}`;
+                const classData = currentUserSchedule[key];
 
-                if (!notifiedSlots.has(uniqueNotifId)) {
-                    const classData = currentUserSchedule[key];
-                    if (classData) {
-                        sendNotification(classData, slot);
-                        notifiedSlots.add(uniqueNotifId);
-                    }
+                if (classData) {
+                    upcomingClassFound = true;
+                    handlePersistentNotification(key, classData, diffMs);
+                    break; // Handle only the nearest one
                 }
             }
-        });
-    }
-
-    function sendNotification(classData, slotInfo) {
-        let title = "Upcoming Class (10 mins)";
-        let body = "";
-        
-        let hour = slotInfo.h;
-        let ampm = hour >= 12 ? 'PM' : 'AM';
-        hour = hour % 12;
-        hour = hour ? hour : 12;
-        const timeStr = `${hour}:${slotInfo.m} ${ampm}`;
-
-        if (Array.isArray(classData)) {
-            const subjects = classData.map(c => c.subj).join(' / ');
-            body = `${subjects} starts at ${timeStr}`;
-        } else {
-            const type = classData.type === 'lab' ? 'LAB' : 'Lecture';
-            body = `${classData.subj} (${type}) in Room ${classData.room} starts at ${timeStr}.`;
         }
 
-        const notif = new Notification(title, {
-            body: body,
-            icon: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏰</text></svg>",
-            requireInteraction: true 
-        });
-        
-        notif.onclick = function() {
-            window.focus();
-            notif.close();
-        };
+        // If no upcoming class in window, but we have an active notification, close it
+        if (!upcomingClassFound && activeNotifState.key) {
+            hideCustomNotification();
+            activeNotifState = { key: null, played10: false, played5: false };
+        }
     }
 
+    function handlePersistentNotification(key, classData, diffMs) {
+        // New notification session
+        if (activeNotifState.key !== key) {
+            activeNotifState = { key: key, played10: false, played5: false };
+        }
+
+        const mins = Math.floor(diffMs / 60000);
+        const secs = Math.floor((diffMs % 60000) / 1000);
+        const timeString = `${mins}:${secs.toString().padStart(2, '0')}`;
+        const diffMins = diffMs / 60000;
+
+        // Prepare content
+        let title = "Upcoming Class";
+        let body = "";
+        if (Array.isArray(classData)) {
+            body = classData.map(c => c.subj).join(' / ');
+        } else {
+            const type = classData.type === 'lab' ? 'LAB' : 'Lecture';
+            body = `${classData.subj} (${type}) - Room ${classData.room}`;
+        }
+
+        // Show/Update Notification
+        showCustomNotification(title, body, timeString, true);
+
+        // Sound Logic
+        if (diffMins > 5) {
+             // 10 Minute Warning range
+             if (!activeNotifState.played10) {
+                 sound10.play().catch(e => console.log(e));
+                 activeNotifState.played10 = true;
+             }
+        } else {
+             // 5 Minute Warning range
+             if (!activeNotifState.played5) {
+                 sound5.play().catch(e => console.log(e));
+                 activeNotifState.played5 = true;
+                 // Ensure 10m flag is set so we don't play it if logic glitches
+                 activeNotifState.played10 = true; 
+             }
+        }
+    }
 
     // --- COLLISION FIXER ---
     function fixSpanCollisions(schedule) {
