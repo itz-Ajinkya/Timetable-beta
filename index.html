@@ -127,6 +127,105 @@
             white-space: nowrap;
         }
 
+        /* Urgent Notification (Rainbow Border) */
+        #custom-toast.urgent {
+            border-left: none;
+            padding: 15px 20px;
+            overflow: hidden;
+        }
+
+        #custom-toast.urgent::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(
+                from 0deg, 
+                #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000
+            );
+            animation: rotate-rainbow 3s linear infinite;
+            z-index: -2;
+        }
+
+        #custom-toast.urgent::after {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px; right: 3px; bottom: 3px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            z-index: -1;
+        }
+
+        @keyframes rotate-rainbow {
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* MOBILE OPTIMIZATIONS */
+        @media (max-width: 768px) {
+            /* Toast: Flow layout on mobile */
+            #custom-toast {
+                position: relative;
+                top: 0; left: 0;
+                transform: none !important;
+                width: 100%;
+                max-width: 100%;
+                margin: 0 0 15px 0;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                display: none; /* Hidden from flow when inactive */
+                opacity: 1;
+                transition: none;
+            }
+            
+            #custom-toast.show {
+                display: grid;
+                animation: slideDownMobile 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+            
+            @keyframes slideDownMobile {
+                from { opacity: 0; transform: translateY(-20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            /* Compact Table & Cards */
+            td, td.time-col-cell, .break { height: 90px; padding: 2px; }
+            .slot { padding: 4px 2px; }
+            .slot-title { font-size: 0.85rem; margin-bottom: 2px; }
+            .room-tag { font-size: 0.7rem; padding: 2px 6px; }
+            .lab-tag { font-size: 1.2rem; top: 2px; }
+            
+            .card { min-height: 110px; padding: 10px 8px; }
+            .card .subject { font-size: 1.3rem; }
+            .card h3 { font-size: 0.7rem; }
+            .card .detail { font-size: 0.9rem; padding: 4px 8px; }
+            .card .batch-badge { font-size: 0.7rem; padding: 2px 6px; }
+            
+            /* Header adjustments */
+            .header-main { padding: 12px 15px; }
+            .container { padding: 10px 10px 80px 10px; }
+        }
+
+        /* UNMUTE OVERLAY */
+        #unmute-overlay {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e74c3c;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+            z-index: 10000;
+            cursor: pointer;
+            display: none;
+            animation: bounce 1s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-5px); }
+        }
+
         /* ============================
            LOGIN SCREEN
            ============================ */
@@ -656,14 +755,7 @@
 </head>
 <body>
 
-    <div id="custom-toast">
-        <div class="toast-icon">🔔</div>
-        <div class="toast-content">
-            <h4 id="toast-title">Notification</h4>
-            <p id="toast-body">Message goes here</p>
-        </div>
-        <div class="toast-timer" id="toast-timer"></div>
-    </div>
+    <div id="unmute-overlay" onclick="unlockAudio()">🔊 Tap to Unmute Alarms</div>
 
     <div id="home-page">
         <div class="login-card">
@@ -724,6 +816,15 @@
                     <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
             </header>
+
+            <div id="custom-toast">
+                <div class="toast-icon">🔔</div>
+                <div class="toast-content">
+                    <h4 id="toast-title">Notification</h4>
+                    <p id="toast-body">Message goes here</p>
+                </div>
+                <div class="toast-timer" id="toast-timer"></div>
+            </div>
 
             <div id="clash-footer" class="clash-note" style="margin-bottom: 20px;">
                 <div style="font-size: 1.1em; margin-bottom: 8px;">⚠️ <strong>Clash Detected!</strong></div>
@@ -795,12 +896,11 @@
     let clockInterval;
     let currentUserSchedule = null;
     let currentLiveSlotId = null;
-    let notifiedSlots = new Set();
     let notificationsEnabled = false;
     
     // Audio Objects
     const sound10 = new Audio('noti.mp3');
-    const sound5 = new Audio('noti 5.mp3');
+    const sound5 = new Audio('noti5.mp3'); // User requested noti.mp3
     
     // Active Notification State
     let activeNotifState = { key: null, played10: false, played5: false };
@@ -851,6 +951,18 @@
             const data = getStudentData(savedUser);
             if(data) loadDashboard(data);
         }
+        
+        // GLOBAL INTERACTION LISTENER (To Unlock Audio on first click)
+        document.body.addEventListener('click', function() {
+            if(sound10.paused && sound5.paused) { 
+                // Attempt to play/pause quickly to unlock audio context
+                sound10.play().then(() => {
+                    sound10.pause(); 
+                    sound10.currentTime = 0;
+                    document.getElementById('unmute-overlay').style.display = 'none';
+                }).catch(() => {});
+            }
+        }, { once: true });
 
         requestAnimationFrame(animateLoop);
     };
@@ -880,6 +992,9 @@
         if (typeof getStudentData !== "function") {
             alert("JS Files missing"); return;
         }
+        
+        // Unlock Audio on Login Click
+        sound10.play().then(() => { sound10.pause(); sound10.currentTime = 0; }).catch(()=>{});
 
         const data = getStudentData(fullMis);
         if (data) {
@@ -919,8 +1034,11 @@
             notificationsEnabled = true;
             localStorage.setItem('notificationsEnabled', 'true');
             
-            // Try to play sound immediately (user interaction unlocks audio context)
-            sound10.play().catch(e => console.log("Audio play prevented:", e));
+            // Try to play sound immediately
+            sound10.play().catch(e => {
+                console.log("Audio play prevented:", e);
+                document.getElementById('unmute-overlay').style.display = 'block';
+            });
             
             // Show Test Notification
             showCustomNotification("Notifications ON", "Test success! You will hear this sound 10 mins before class.");
@@ -931,7 +1049,7 @@
         }
     }
     
-    function showCustomNotification(title, body, timerStr = "", persistent = false) {
+    function showCustomNotification(title, body, timerStr = "", persistent = false, isUrgent = false) {
         const toast = document.getElementById('custom-toast');
         const tTitle = document.getElementById('toast-title');
         const tBody = document.getElementById('toast-body');
@@ -942,6 +1060,13 @@
             tBody.innerText = body;
             if(tTimer) tTimer.innerText = timerStr;
             
+            // Handle Urgent State
+            if (isUrgent) {
+                toast.classList.add('urgent');
+            } else {
+                toast.classList.remove('urgent');
+            }
+
             toast.classList.add('show');
             
             // Clear any existing timeout to hide
@@ -950,6 +1075,7 @@
             if (!persistent) {
                 toast.hideTimeout = setTimeout(() => {
                     toast.classList.remove('show');
+                    toast.classList.remove('urgent');
                 }, 5000);
             }
         }
@@ -961,6 +1087,14 @@
             toast.classList.remove('show');
             if (toast.hideTimeout) clearTimeout(toast.hideTimeout);
         }
+    }
+    
+    function unlockAudio() {
+        sound10.play().then(() => {
+            sound10.pause();
+            sound10.currentTime = 0;
+            document.getElementById('unmute-overlay').style.display = 'none';
+        }).catch(e => alert("Please tap anywhere else on the page to unlock audio."));
     }
 
     function checkUpcomingClasses(now) {
@@ -1015,7 +1149,7 @@
     }
 
     function handlePersistentNotification(key, classData, diffMs) {
-        // New notification session
+        // Reset state on refresh or new key
         if (activeNotifState.key !== key) {
             activeNotifState = { key: key, played10: false, played5: false };
         }
@@ -1024,6 +1158,7 @@
         const secs = Math.floor((diffMs % 60000) / 1000);
         const timeString = `${mins}:${secs.toString().padStart(2, '0')}`;
         const diffMins = diffMs / 60000;
+        const isUrgent = diffMins <= 5;
 
         // Prepare content
         let title = "Upcoming Class";
@@ -1036,21 +1171,26 @@
         }
 
         // Show/Update Notification
-        showCustomNotification(title, body, timeString, true);
+        showCustomNotification(title, body, timeString, true, isUrgent);
 
         // Sound Logic
         if (diffMins > 5) {
              // 10 Minute Warning range
              if (!activeNotifState.played10) {
-                 sound10.play().catch(e => console.log(e));
+                 sound10.play().catch(e => {
+                     console.log("Audio blocked");
+                     document.getElementById('unmute-overlay').style.display = 'block';
+                 });
                  activeNotifState.played10 = true;
              }
         } else {
-             // 5 Minute Warning range
+             // 5 Minute Warning range (Plays even if page was refreshed inside this window)
              if (!activeNotifState.played5) {
-                 sound5.play().catch(e => console.log(e));
+                 sound5.play().catch(e => {
+                     console.log("Audio blocked");
+                     document.getElementById('unmute-overlay').style.display = 'block';
+                 });
                  activeNotifState.played5 = true;
-                 // Ensure 10m flag is set so we don't play it if logic glitches
                  activeNotifState.played10 = true; 
              }
         }
