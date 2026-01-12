@@ -71,34 +71,50 @@
         .hidden { display: none !important; }
 
         /* ============================
-           CUSTOM NOTIFICATION TOAST
+           TOAST CONTAINER & NOTIFICATIONS
            ============================ */
-        #custom-toast {
+        #toast-container {
             position: fixed;
             top: 20px;
             left: 50%;
-            transform: translateX(-50%) translateY(-100px);
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+            width: auto;
+        }
+
+        #custom-toast {
+            position: relative;
+            transform: none;
             background: var(--card-bg);
             border-left: 5px solid var(--accent);
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             padding: 15px 20px;
             border-radius: 12px;
-            z-index: 9999;
             min-width: 300px;
             max-width: 90vw;
             display: grid;
             grid-template-columns: auto 1fr auto;
             align-items: center;
             gap: 15px;
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            pointer-events: none;
+            
+            /* Hiding State */
+            display: none;
+            pointer-events: auto;
+            animation: slideDown 0.4s ease;
         }
 
         #custom-toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-            pointer-events: auto;
+            display: grid;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .toast-icon {
@@ -130,6 +146,7 @@
         /* Urgent Notification (Rainbow Border) */
         #custom-toast.urgent {
             border-left: none;
+            background: transparent; /* Fix: Allow pseudo-elements to show */
             padding: 15px 20px;
             overflow: hidden;
         }
@@ -160,25 +177,65 @@
             100% { transform: rotate(360deg); }
         }
         
+        /* LIVE TOAST */
+        .live-toast {
+            background: var(--card-bg) !important;
+            border: 1px solid var(--live-color);
+            border-radius: 12px;
+            display: none; /* Hidden by default */
+            align-items: stretch; /* Stretch strips to full height */
+            gap: 0; /* Remove gap for edge attachment */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 100%;
+            pointer-events: auto;
+            padding: 0; /* Remove padding for edge attachment */
+            margin-bottom: 20px;
+            overflow: hidden;
+            animation: slideDown 0.4s ease, pulse-green 2s infinite;
+        }
+
+        .live-toast.show {
+            display: flex;
+        }
+        
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+        }
+
+        .live-vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            font-weight: 800;
+            background: var(--live-color);
+            color: white;
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            user-select: none;
+            padding: 0 6px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .live-content {
+            flex: 1;
+            text-align: center;
+            padding: 12px 15px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .live-content h4 { margin: 0 0 4px 0; font-size: 1.1rem; color: var(--text-main); }
+        .live-content p { margin: 0; font-size: 0.9rem; color: var(--text-sub); font-weight: 700; }
+
         /* MOBILE OPTIMIZATIONS */
         @media (max-width: 768px) {
-            /* Toast: Flow layout on mobile */
-            #custom-toast {
+            #toast-container {
                 position: relative;
                 top: 0; left: 0;
-                transform: none !important;
+                transform: none;
                 width: 100%;
-                max-width: 100%;
                 margin: 0 0 15px 0;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                display: none; /* Hidden from flow when inactive */
-                opacity: 1;
-                transition: none;
-            }
-            
-            #custom-toast.show {
-                display: grid;
-                animation: slideDownMobile 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                pointer-events: none;
             }
             
             @keyframes slideDownMobile {
@@ -202,28 +259,6 @@
             /* Header adjustments */
             .header-main { padding: 12px 15px; }
             .container { padding: 10px 10px 80px 10px; }
-        }
-
-        /* UNMUTE OVERLAY */
-        #unmute-overlay {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #e74c3c;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
-            z-index: 10000;
-            cursor: pointer;
-            display: none;
-            animation: bounce 1s infinite;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(-5px); }
         }
 
         /* ============================
@@ -755,8 +790,6 @@
 </head>
 <body>
 
-    <div id="unmute-overlay" onclick="unlockAudio()">🔊 Tap to Unmute Alarms</div>
-
     <div id="home-page">
         <div class="login-card">
             <h1>🗓️ Timetable</h1>
@@ -817,13 +850,15 @@
                 </div>
             </header>
 
-            <div id="custom-toast">
-                <div class="toast-icon">🔔</div>
-                <div class="toast-content">
-                    <h4 id="toast-title">Notification</h4>
-                    <p id="toast-body">Message goes here</p>
+            <div id="toast-container">
+                <div id="custom-toast">
+                    <div class="toast-icon">🔔</div>
+                    <div class="toast-content">
+                        <h4 id="toast-title">Notification</h4>
+                        <p id="toast-body">Message goes here</p>
+                    </div>
+                    <div class="toast-timer" id="toast-timer"></div>
                 </div>
-                <div class="toast-timer" id="toast-timer"></div>
             </div>
 
             <div id="clash-footer" class="clash-note" style="margin-bottom: 20px;">
@@ -835,6 +870,15 @@
                 <span style="font-size: 0.9em; opacity: 0.9;">
                     Also, please send me a screenshot of the mail sent to you regarding the branch/batch change so I can update it on the website.
                 </span>
+            </div>
+            
+            <div id="live-toast" class="live-toast">
+                <div class="live-vertical-text">LIVE</div>
+                <div class="live-content">
+                    <h4 id="live-title">Subject</h4>
+                    <p id="live-room">Room</p>
+                </div>
+                <div class="live-vertical-text">LIVE</div>
             </div>
 
             <div class="cards" id="subject-cards-container"></div>
@@ -954,12 +998,11 @@
         
         // GLOBAL INTERACTION LISTENER (To Unlock Audio on first click)
         document.body.addEventListener('click', function() {
-            if(sound10.paused && sound5.paused) { 
+            if(notificationsEnabled && sound10.paused && sound5.paused) { 
                 // Attempt to play/pause quickly to unlock audio context
                 sound10.play().then(() => {
                     sound10.pause(); 
                     sound10.currentTime = 0;
-                    document.getElementById('unmute-overlay').style.display = 'none';
                 }).catch(() => {});
             }
         }, { once: true });
@@ -1179,7 +1222,6 @@
              if (!activeNotifState.played10) {
                  sound10.play().catch(e => {
                      console.log("Audio blocked");
-                     document.getElementById('unmute-overlay').style.display = 'block';
                  });
                  activeNotifState.played10 = true;
              }
@@ -1188,7 +1230,6 @@
              if (!activeNotifState.played5) {
                  sound5.play().catch(e => {
                      console.log("Audio blocked");
-                     document.getElementById('unmute-overlay').style.display = 'block';
                  });
                  activeNotifState.played5 = true;
                  activeNotifState.played10 = true; 
@@ -1556,6 +1597,29 @@
                     el.appendChild(badge);
                 }
             }
+        }
+
+        // Update Live Toast
+        const liveToast = document.getElementById('live-toast');
+        if (currentLiveSlotId && currentUserSchedule) {
+             const item = currentUserSchedule[currentLiveSlotId];
+             if (item) {
+                 let title = "", room = "";
+                 if (Array.isArray(item)) {
+                     title = item.map(i => i.subj).join(' / ');
+                     room = item.map(i => i.room).join(' / ');
+                 } else {
+                     title = item.subj + (item.type === 'lab' ? ' LAB' : '');
+                     room = item.room;
+                 }
+                 document.getElementById('live-title').innerText = title;
+                 document.getElementById('live-room').innerText = room;
+                 liveToast.classList.add('show');
+             } else {
+                 liveToast.classList.remove('show');
+             }
+        } else {
+             if(liveToast) liveToast.classList.remove('show');
         }
     }
 </script>
