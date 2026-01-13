@@ -831,7 +831,7 @@
                     </div>
                     
                     <div class="header-center">
-                        <div class="notif-wrapper" title="Notify 10 mins before class">
+                        <div class="notif-wrapper" title="Mute/Unmute Audio">
                             <label class="switch">
                                 <input type="checkbox" id="notif-toggle" onchange="toggleNotificationChange()">
                                 <span class="slider"></span>
@@ -941,6 +941,7 @@
     let currentUserSchedule = null;
     let currentLiveSlotId = null;
     let notificationsEnabled = false;
+    let wakeLock = null;
     
     // Audio Objects
     const sound10 = new Audio('noti.mp3');
@@ -1004,6 +1005,10 @@
                     sound10.pause(); 
                     sound10.currentTime = 0;
                 }).catch(() => {});
+                sound5.play().then(() => {
+                    sound5.pause(); 
+                    sound5.currentTime = 0;
+                }).catch(() => {});
             }
         }, { once: true });
 
@@ -1038,6 +1043,7 @@
         
         // Unlock Audio on Login Click
         sound10.play().then(() => { sound10.pause(); sound10.currentTime = 0; }).catch(()=>{});
+        sound5.play().then(() => { sound5.pause(); sound5.currentTime = 0; }).catch(()=>{});
 
         const data = getStudentData(fullMis);
         if (data) {
@@ -1080,8 +1086,8 @@
             // Try to play sound immediately
             sound10.play().catch(e => {
                 console.log("Audio play prevented:", e);
-                document.getElementById('unmute-overlay').style.display = 'block';
             });
+            sound5.play().then(() => { sound5.pause(); sound5.currentTime = 0; }).catch(()=>{});
             
             // Show Test Notification
             showCustomNotification("Notifications ON", "Test success! You will hear this sound 10 mins before class.");
@@ -1132,16 +1138,8 @@
         }
     }
     
-    function unlockAudio() {
-        sound10.play().then(() => {
-            sound10.pause();
-            sound10.currentTime = 0;
-            document.getElementById('unmute-overlay').style.display = 'none';
-        }).catch(e => alert("Please tap anywhere else on the page to unlock audio."));
-    }
-
     function checkUpcomingClasses(now) {
-        if (!notificationsEnabled || !currentUserSchedule) return;
+        if (!currentUserSchedule) return;
 
         const currentDay = now.getDay(); 
         const days = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
