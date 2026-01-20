@@ -12,6 +12,10 @@
     <meta name="theme-color" content="#6c5ce7">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+
     <style>
         @import url('https://fonts.cdnfonts.com/css/cascadia-code');
 
@@ -1017,6 +1021,275 @@
             body.view-mode-desktop { min-width: 1200px; overflow-x: auto; }
             body.view-mode-desktop .cards { justify-content: center !important; flex-wrap: wrap !important; overflow-x: visible !important; }
         }
+
+        /* Current Time Row Highlight */
+        .current-time-row .time-col-cell {
+            border-left: 5px solid var(--live-color) !important;
+            color: var(--live-color) !important;
+            background: var(--card-bg) !important;
+        }
+
+        .current-time-row td:not(.time-col-cell) {
+            background-color: rgba(108, 92, 231, 0.05);
+        }
+
+        body.dark-mode .current-time-row td:not(.time-col-cell) {
+            background-color: rgba(162, 155, 254, 0.05);
+        }
+
+        /* ============================
+           CHAT FEATURE STYLES (ADDED)
+           ============================ */
+        .chat-fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+            cursor: pointer;
+            z-index: 5000;
+            transition: transform 0.2s;
+        }
+        .chat-fab:active { transform: scale(0.90); }
+
+        .chat-modal-overlay {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 360px;
+            height: 550px;
+            top: auto; left: auto;
+            background: transparent;
+            backdrop-filter: none;
+            z-index: 6000;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            opacity: 0;
+            transform: scale(0);
+            transform-origin: bottom right;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+        }
+        .chat-modal-overlay.active { 
+            display: flex; 
+            opacity: 1; 
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .chat-card {
+            background: var(--card-bg-solid);
+            width: 100%;
+            height: 100%;
+            max-width: none;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: none;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+        }
+
+        @media (max-width: 480px) {
+            .chat-modal-overlay {
+                bottom: 0;
+                right: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+                transform: translateY(100%);
+                transform-origin: bottom center;
+            }
+            .chat-modal-overlay.active {
+                transform: translateY(0);
+            }
+            .chat-card {
+                border-radius: 0;
+                border: none;
+            }
+        }
+
+        /* Subject List Styles */
+        .subject-list { padding: 15px; overflow-y: auto; }
+        .subject-btn {
+            width: 100%;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .subject-btn:hover { background: rgba(108, 92, 231, 0.05); border-color: var(--primary); }
+        .subject-code { font-weight: 800; color: var(--primary); font-size: 1.1rem; }
+        .subject-div { font-size: 0.85rem; color: var(--text-sub); margin-top: 4px; }
+
+        /* Chat Room Styles */
+        .chat-header {
+            padding: 18px;
+            background: var(--header-bg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            position: relative;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .message.mine {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .message.theirs {
+            align-self: flex-start;
+            background: var(--card-bg-solid);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+        .msg-sender {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 600;
+        }
+        .chat-input-area {
+            padding: 12px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 10px;
+            background: var(--card-bg-solid);
+        }
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            outline: none;
+            background: var(--bg);
+            color: var(--text-main);
+            margin-top: 0; /* Reset global input margin */
+            font-family: inherit;
+        }
+        .send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+        .send-btn:hover { transform: scale(1.05); }
+        
+        /* New Chat Features */
+        .msg-context-menu {
+            position: fixed;
+            background: var(--card-bg-solid);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            z-index: 7000;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            min-width: 140px;
+            backdrop-filter: blur(10px);
+        }
+        .msg-context-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            transition: background 0.2s;
+        }
+        .msg-context-item:hover { background: rgba(0,0,0,0.05); }
+        .msg-context-item.delete { color: var(--error); }
+
+        .reply-banner {
+            background: var(--bg);
+            padding: 8px 16px;
+            border-left: 4px solid var(--primary);
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            animation: slideUp 0.2s ease;
+        }
+        .reply-banner.active { display: flex; }
+        .reply-content { display: flex; flex-direction: column; overflow: hidden; max-width: 80%; }
+        .reply-sender { font-weight: 700; color: var(--primary); margin-bottom: 2px; }
+        .reply-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.8; }
+
+        .msg-reply-preview {
+            background: rgba(0,0,0,0.05);
+            border-left: 3px solid var(--primary);
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            opacity: 0.9;
+        }
+        .mine .msg-reply-preview { background: rgba(0,0,0,0.1); border-left-color: rgba(255,255,255,0.8); }
+
+        .chat-image {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 6px;
+            cursor: pointer;
+            display: block;
+        }
+        
+        .message {
+            transition: transform 0.1s ease-out;
+            touch-action: pan-y; /* Allow vertical scroll, handle horizontal manually */
+        }
+
     </style>
 </head>
 <body>
@@ -1153,6 +1426,64 @@
 
             </footer>
 
+        </div>
+    </div>
+
+    <div class="chat-fab" onclick="openSubjectSelector()">
+        <i class="fas fa-comments"></i>
+    </div>
+
+    <div class="chat-modal-overlay" id="subjectModal">
+        <div class="chat-card">
+            <div class="chat-header">
+                <span><i class="fas fa-users"></i> Select Group</span>
+                <i class="fas fa-times" onclick="closeModals()" style="cursor:pointer; color:var(--text-sub)"></i>
+            </div>
+            <div class="subject-list" id="subjectListContent">
+                </div>
+        </div>
+    </div>
+
+    <div class="chat-modal-overlay" id="chatRoomModal">
+        <div class="chat-card">
+            <div class="chat-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fas fa-arrow-left" onclick="openSubjectSelector()" style="cursor:pointer"></i>
+                    <span id="chatTitle">Group Name</span>
+                </div>
+                <i class="fas fa-times" onclick="closeModals()" style="cursor:pointer; color:var(--text-sub)"></i>
+            </div>
+            <div class="chat-messages" id="messagesArea">
+                </div>
+            
+            <div class="chat-footer" style="background: var(--card-bg-solid);">
+                <div class="reply-banner" id="replyBanner">
+                    <div class="reply-content">
+                        <span class="reply-sender" id="replySender">Sender</span>
+                        <span class="reply-text" id="replyText">Message text...</span>
+                    </div>
+                    <i class="fas fa-times" onclick="clearReply()" style="cursor:pointer; padding:5px;"></i>
+                </div>
+                <form class="chat-input-area" onsubmit="sendMessage(event)" style="border-top:none;">
+                    <i class="fas fa-paperclip attach-btn" onclick="document.getElementById('fileInput').click()" style="font-size:1.2rem; color:var(--text-sub); cursor:pointer; padding:0 8px;"></i>
+                    <input type="file" id="fileInput" hidden accept="image/*" onchange="handleFileUpload(this)">
+                    <input type="text" class="chat-input" id="msgInput" placeholder="Type a message..." autocomplete="off">
+                    <button type="submit" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <div class="msg-context-menu" id="msgContextMenu">
+        <div class="msg-context-item" onclick="triggerReplyFromMenu()">
+            <i class="fas fa-reply"></i> Reply
+        </div>
+        <div class="msg-context-item" id="ctxEditBtn" onclick="triggerEdit()">
+            <i class="fas fa-pen"></i> Edit
+        </div>
+        <div class="msg-context-item delete" id="ctxDeleteBtn" onclick="triggerDelete()">
+            <i class="fas fa-trash"></i> Delete
         </div>
     </div>
 
@@ -1641,7 +1972,7 @@
             if (slot.id === "1230") {
             }
 
-            let rowHtml = `<tr><td class="time-col time-col-cell">${slot.label}</td>`;
+            let rowHtml = `<tr id="row-${slot.id}"><td class="time-col time-col-cell">${slot.label}</td>`;
 
             days.forEach(day => {
                 const key = `${day}-${slot.id}`;
@@ -1790,7 +2121,7 @@
             const duration = 1.5 + Math.random() * 2;
             flake.style.animationDuration = duration + 's';
             // Increased opacity significantly (0.4 to 0.8 range)
-            flake.style.opacity = 0.4 + Math.random() * 0.8; 
+            flake.style.opacity = 0.9 + Math.random() * 1.5;
             snowContainer.appendChild(flake);
             setTimeout(() => { if(flake.parentNode) flake.remove(); }, duration * 1000);
         }
@@ -1833,6 +2164,13 @@
         else if (min >= 930 && min < 990) slotId = "1530";
         else if (min >= 990 && min < 1050) slotId = "1630";
         else if (min >= 1050 && min < 1110) slotId = "1730";
+
+        // Highlight current time row
+        document.querySelectorAll('.current-time-row').forEach(el => el.classList.remove('current-time-row'));
+        if (slotId) {
+            const row = document.getElementById(`row-${slotId}`);
+            if (row) row.classList.add('current-time-row');
+        }
 
         if (slotId === '1230' && lb) {
              if (!lb.classList.contains('lunch-now')) {
@@ -1945,6 +2283,379 @@
                 .then(reg => console.log('Service Worker registered'))
                 .catch(err => console.log('Service Worker registration failed: ', err));
         });
+    }
+
+    // --- FIREBASE CHAT SYSTEM LOGIC ---
+    
+    // 🔴 IMPORTANT: PASTE YOUR FIREBASE KEYS HERE 🔴
+    const firebaseConfig = {
+        apiKey: "AIzaSyBZHCiqLPSM9_tO3g1NiYxr53YfwdrJeAM",
+        authDomain: "coep-timetable-chat.firebaseapp.com",
+        projectId: "coep-timetable-chat",
+        storageBucket: "coep-timetable-chat.appspot.com",
+        messagingSenderId: "104557504692",
+        appId: "1:104557504692:web:506682eb4fd1e7d62d4fe1"
+    };
+
+    // Initialize Firebase if not already initialized
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    // Close Chat on Escape Key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") closeModals();
+    });
+
+    let currentChatId = null;
+    let unsubscribeChat = null;
+    let chatUser = "Student"; // Default fallback
+    let currentReply = null; // { id, text, sender }
+    let contextMenuMsgId = null;
+    let contextMenuMsgText = null;
+    let contextMenuIsMine = false;
+
+    // 1. Open Selector Logic
+    function openSubjectSelector() {
+        // Use the same storage key as your login system
+        const mis = localStorage.getItem('currentUserMIS');
+        
+        if (!mis || typeof GENERATED_DB === 'undefined' || !GENERATED_DB[mis]) {
+            alert("Please login and load your timetable first.");
+            return;
+        }
+
+        const student = GENERATED_DB[mis];
+        chatUser = student.name; // Set user name for chat
+
+        const list = document.getElementById('subjectListContent');
+        list.innerHTML = ''; 
+
+        // Create buttons for each subject
+        if(student.cards) {
+            student.cards.forEach(card => {
+                const btn = document.createElement('div');
+                btn.className = 'subject-btn';
+                
+                // Unique Group ID: SubjectCode + Division (e.g., EP_Div7)
+                // Remove spaces from Div for cleaner ID
+                const cleanDiv = (card.div || "").replace(/\s+/g, ''); 
+                const groupId = `${card.code}_${cleanDiv}`; 
+
+                btn.innerHTML = `
+                    <div>
+                        <div class="subject-code">${card.code}</div>
+                        <div class="subject-div">${card.div}</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color:var(--text-sub)"></i>
+                `;
+                
+                btn.onclick = () => openChatRoom(groupId, card.code);
+                list.appendChild(btn);
+            });
+        }
+
+        document.getElementById('subjectModal').classList.add('active');
+        document.getElementById('chatRoomModal').classList.remove('active');
+    }
+
+    // 2. Open Chat Room
+    function openChatRoom(groupId, subjectName) {
+        currentChatId = groupId;
+        document.getElementById('chatTitle').innerText = subjectName;
+        
+        // Switch Modals
+        document.getElementById('subjectModal').classList.remove('active');
+        document.getElementById('chatRoomModal').classList.add('active');
+        
+        const msgArea = document.getElementById('messagesArea');
+        msgArea.innerHTML = '<div style="text-align:center;color:#999;margin-top:20px;">Loading messages...</div>';
+
+        // Detach previous listener
+        if (unsubscribeChat) unsubscribeChat();
+
+        // Listen for new messages
+        unsubscribeChat = db.collection('chats').doc(groupId).collection('messages')
+            .orderBy('timestamp', 'asc')
+            .limit(50)
+            .onSnapshot(snapshot => {
+                msgArea.innerHTML = '';
+                if (snapshot.empty) {
+                    msgArea.innerHTML = '<div style="text-align:center;color:#ccc;margin-top:50px;">No messages yet.<br>Start the conversation! 👋</div>';
+                }
+                
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const msgId = doc.id;
+                    const el = document.createElement('div');
+                    const isMine = data.sender === chatUser;
+                    
+                    el.className = `message ${isMine ? 'mine' : 'theirs'}`;
+                    el.dataset.id = msgId;
+                    el.dataset.text = data.text || "";
+                    el.dataset.sender = data.sender;
+                    el.dataset.isMine = isMine;
+                    
+                    // Reply Preview
+                    let replyHtml = '';
+                    if (data.replyTo) {
+                        replyHtml = `
+                            <div class="msg-reply-preview">
+                                <div style="font-weight:700; font-size:0.75rem;">${escapeHtml(data.replyTo.sender)}</div>
+                                <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(data.replyTo.text)}</div>
+                            </div>
+                        `;
+                    }
+
+                    // Image
+                    let imageHtml = data.imageUrl ? `<img src="${data.imageUrl}" class="chat-image" onclick="window.open(this.src, '_blank')">` : '';
+
+                    el.innerHTML = `
+                        <span class="msg-sender">${isMine ? 'You' : (data.sender || 'Anon')}</span>
+                        ${replyHtml}
+                        ${escapeHtml(data.text)}
+                        ${imageHtml}
+                    `;
+                    
+                    // Attach Events for Swipe & Long Press
+                    attachMessageEvents(el, msgId, data.text, data.sender, isMine);
+
+                    msgArea.appendChild(el);
+                });
+                
+                // Auto scroll to bottom
+                msgArea.scrollTop = msgArea.scrollHeight;
+            });
+    }
+
+    // --- Message Interaction Logic (Swipe & Long Press) ---
+    function attachMessageEvents(el, msgId, text, sender, isMine) {
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let longPressTimer;
+        let isSwiping = false;
+
+        // Long Press (Mobile & Desktop)
+        const startLongPress = (e) => {
+            longPressTimer = setTimeout(() => {
+                showContextMenu(e, msgId, text, isMine);
+                // Vibrate if supported
+                if (navigator.vibrate) navigator.vibrate(50);
+            }, 500);
+        };
+
+        const cancelLongPress = () => {
+            clearTimeout(longPressTimer);
+        };
+
+        // Touch Events
+        el.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            startLongPress(e);
+        }, {passive: true});
+
+        el.addEventListener('touchmove', (e) => {
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            const deltaX = touchX - touchStartX;
+            const deltaY = touchY - touchStartY;
+
+            // Cancel long press if moved
+            if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) cancelLongPress();
+
+            // Swipe to Reply Logic (Right Swipe)
+            if (deltaX > 30 && Math.abs(deltaY) < 30) {
+                isSwiping = true;
+                el.style.transform = `translateX(${Math.min(deltaX, 100)}px)`;
+            }
+        }, {passive: true});
+
+        el.addEventListener('touchend', (e) => {
+            cancelLongPress();
+            if (isSwiping) {
+                const touchX = e.changedTouches[0].clientX;
+                if (touchX - touchStartX > 80) {
+                    // Trigger Reply
+                    setReply(msgId, text, sender);
+                }
+                // Reset
+                el.style.transform = 'translateX(0)';
+                isSwiping = false;
+            }
+        });
+
+        // Mouse Events (Desktop Long Press)
+        el.addEventListener('mousedown', (e) => startLongPress(e));
+        el.addEventListener('mouseup', cancelLongPress);
+        el.addEventListener('mouseleave', cancelLongPress);
+        
+        // Prevent context menu on right click to use custom one
+        el.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            showContextMenu(e, msgId, text, isMine);
+        });
+    }
+
+    function showContextMenu(e, msgId, text, isMine) {
+        contextMenuMsgId = msgId;
+        contextMenuMsgText = text;
+        contextMenuIsMine = isMine;
+        
+        const menu = document.getElementById('msgContextMenu');
+        const editBtn = document.getElementById('ctxEditBtn');
+        const delBtn = document.getElementById('ctxDeleteBtn');
+
+        // Show/Hide Edit/Delete based on ownership
+        editBtn.style.display = isMine ? 'flex' : 'none';
+        delBtn.style.display = isMine ? 'flex' : 'none';
+
+        // Position Menu
+        let x, y;
+        if (e.touches) {
+            x = e.touches[0].clientX;
+            y = e.touches[0].clientY;
+        } else {
+            x = e.clientX;
+            y = e.clientY;
+        }
+
+        // Boundary checks
+        if (x + 150 > window.innerWidth) x = window.innerWidth - 160;
+        if (y + 150 > window.innerHeight) y = window.innerHeight - 160;
+
+        menu.style.left = x + 'px';
+        menu.style.top = y + 'px';
+        menu.style.display = 'flex';
+
+        // Close menu on click elsewhere
+        const closeMenu = () => {
+            menu.style.display = 'none';
+            document.removeEventListener('click', closeMenu);
+        };
+        // Delay slightly to prevent immediate closing
+        setTimeout(() => document.addEventListener('click', closeMenu), 100);
+    }
+
+    // --- Reply Logic ---
+    function setReply(id, text, sender) {
+        currentReply = { id, text, sender };
+        document.getElementById('replySender').innerText = sender;
+        document.getElementById('replyText').innerText = text || "Image";
+        document.getElementById('replyBanner').classList.add('active');
+        document.getElementById('msgInput').focus();
+    }
+
+    function clearReply() {
+        currentReply = null;
+        document.getElementById('replyBanner').classList.remove('active');
+    }
+
+    function triggerReplyFromMenu() {
+        // Get sender from DOM since context menu might not have it
+        // Actually we can find the element
+        const el = document.querySelector(`.message[data-id="${contextMenuMsgId}"]`);
+        if (el) {
+            setReply(contextMenuMsgId, contextMenuMsgText, el.dataset.sender);
+        }
+    }
+
+    // 3. Send Message
+    function sendMessage(e) {
+        e.preventDefault();
+        const input = document.getElementById('msgInput');
+        const text = input.value.trim();
+        
+        if ((!text && !currentReply) || !currentChatId) return;
+
+        const payload = {
+            text: text,
+            sender: chatUser,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (currentReply) {
+            payload.replyTo = currentReply;
+        }
+
+        db.collection('chats').doc(currentChatId).collection('messages').add(payload).then(() => {
+            clearReply();
+        }).catch(err => {
+            console.error("Error sending:", err);
+            alert("Message failed. Check console.");
+        });
+
+        input.value = '';
+    }
+
+    // --- File Upload ---
+    function handleFileUpload(input) {
+        const file = input.files[0];
+        if (!file || !currentChatId) return;
+
+        // Simple loading indicator
+        const btn = document.querySelector('.attach-btn');
+        btn.style.color = 'var(--primary)';
+        
+        const storageRef = storage.ref(`chat_media/${currentChatId}/${Date.now()}_${file.name}`);
+        const uploadTask = storageRef.put(file);
+
+        uploadTask.on('state_changed', 
+            (snapshot) => {}, 
+            (error) => {
+                alert("Upload failed: " + error.message);
+                btn.style.color = 'var(--text-sub)';
+                input.value = '';
+            }, 
+            () => {
+                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                    db.collection('chats').doc(currentChatId).collection('messages').add({
+                        text: "",
+                        imageUrl: downloadURL,
+                        sender: chatUser,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    btn.style.color = 'var(--text-sub)';
+                    input.value = '';
+                });
+            }
+        );
+    }
+
+    // --- Edit / Delete Triggers ---
+    function triggerDelete() {
+        if(!confirm("Delete this message?")) return;
+        db.collection('chats').doc(currentChatId).collection('messages').doc(contextMenuMsgId).delete()
+            .catch(err => alert("Error deleting: " + err.message));
+    }
+
+    function triggerEdit() {
+        const newText = prompt("Edit message:", contextMenuMsgText);
+        if (newText !== null && newText.trim() !== "" && newText !== contextMenuMsgText) {
+            db.collection('chats').doc(currentChatId).collection('messages').doc(contextMenuMsgId).update({
+                text: newText.trim()
+            }).catch(err => alert("Error updating: " + err.message));
+        }
+    }
+
+    function closeModals() {
+        document.getElementById('subjectModal').classList.remove('active');
+        document.getElementById('chatRoomModal').classList.remove('active');
+        document.getElementById('msgContextMenu').style.display = 'none';
+        if (unsubscribeChat) unsubscribeChat();
+    }
+
+    // Security Helper
+    function escapeHtml(text) {
+        if (!text) return text;
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
 </script>
