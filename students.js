@@ -31185,6 +31185,12 @@ const GENERATED_DB = {
         "name": "Mfg Practices & FabLab",
         "div": "Div 1",
         "batch": "B2"
+      },
+      {
+        "code": "CAED",
+        "name": "CA Engg & Drawing",
+        "div": "Div 2",
+        "batch": "B1"
       }
     ],
     "schedule": {}
@@ -55905,7 +55911,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -55948,7 +55954,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -55991,7 +55997,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56077,7 +56083,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56163,7 +56169,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56206,7 +56212,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56292,7 +56298,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56335,7 +56341,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56378,7 +56384,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56550,7 +56556,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56636,7 +56642,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56722,7 +56728,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56765,7 +56771,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56808,7 +56814,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56851,7 +56857,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56894,7 +56900,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -56980,7 +56986,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57066,7 +57072,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57152,7 +57158,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57281,7 +57287,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57324,7 +57330,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57453,7 +57459,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57582,7 +57588,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57662,7 +57668,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57748,7 +57754,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -57877,7 +57883,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58006,7 +58012,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58092,7 +58098,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58135,7 +58141,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58178,7 +58184,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58221,7 +58227,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58350,7 +58356,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58436,7 +58442,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58516,7 +58522,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58602,7 +58608,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58688,7 +58694,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58731,7 +58737,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58774,7 +58780,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -58860,7 +58866,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59075,7 +59081,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59118,7 +59124,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59247,7 +59253,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59376,7 +59382,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59548,7 +59554,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59671,7 +59677,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59714,7 +59720,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59843,7 +59849,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59886,7 +59892,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -59966,7 +59972,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60052,7 +60058,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60095,7 +60101,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60138,7 +60144,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60224,7 +60230,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60267,7 +60273,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60310,7 +60316,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60396,7 +60402,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60482,7 +60488,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60525,7 +60531,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60568,7 +60574,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60581,14 +60587,14 @@ const GENERATED_DB = {
     "schedule": {}
   },
   "612572017": {
-    "name": "Student",
+    "name": "Arnav Kumar",
     "info": "MIS: 612572017",
     "cards": [
       {
         "code": "EP",
         "name": "Engg Physics",
         "div": "Div 4",
-        "batch": "B1"
+        "batch": "B3"
       },
       {
         "code": "AEIOT",
@@ -60613,6 +60619,12 @@ const GENERATED_DB = {
         "name": "CAD Drafting",
         "div": "Div 1",
         "batch": "B2"
+      },
+      {
+        "code": "DS",
+        "name": "Discrete Struct",
+        "div": "Div 5",
+        "batch": "B1"
       }
     ],
     "schedule": {}
@@ -60777,7 +60789,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60820,7 +60832,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60906,7 +60918,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60949,7 +60961,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -60992,7 +61004,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61078,7 +61090,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61121,7 +61133,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61293,7 +61305,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61336,7 +61348,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61422,7 +61434,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61508,7 +61520,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61637,7 +61649,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61680,7 +61692,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61723,7 +61735,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61766,7 +61778,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61809,7 +61821,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61852,7 +61864,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -61895,7 +61907,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62024,7 +62036,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62067,7 +62079,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62153,7 +62165,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62196,7 +62208,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62239,7 +62251,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62282,7 +62294,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62411,7 +62423,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62454,7 +62466,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62497,7 +62509,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62540,7 +62552,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62583,7 +62595,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62669,7 +62681,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62712,7 +62724,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62755,7 +62767,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62798,7 +62810,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62841,7 +62853,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -62970,7 +62982,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63013,7 +63025,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63099,7 +63111,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63142,7 +63154,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63185,7 +63197,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63228,7 +63240,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63314,7 +63326,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63357,7 +63369,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63400,7 +63412,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63443,7 +63455,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63486,7 +63498,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63529,7 +63541,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63615,7 +63627,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63658,7 +63670,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63744,7 +63756,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63787,7 +63799,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63830,7 +63842,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63873,7 +63885,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -63916,7 +63928,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {
@@ -64002,7 +64014,7 @@ const GENERATED_DB = {
       {
         "code": "PD",
         "name": "Personality Dev",
-        "div": "Div 9",
+        "div": "Div 8",
         "batch": "-"
       },
       {

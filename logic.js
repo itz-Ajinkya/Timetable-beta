@@ -1744,7 +1744,7 @@ const MASTER_SCHEDULE = {
     "PD": {
         "Div 1": {
             "sat-0830": {
-                "room": "NC -  1",
+                "room": "AC -  101",
                 "span": 2,
                 "type": "lec",
                 "custom_time": "9:00 - 10:30",
@@ -1752,17 +1752,17 @@ const MASTER_SCHEDULE = {
             }
         },
         "Div 2": {
-            "sat-1030": {
-                "room": "NC -  1",
+            "sat-0830": {
+                "room": "AC -  102",
                 "span": 2,
                 "type": "lec",
-                "custom_time": "11:00 - 12:30",
+                "custom_time": "09:00 - 10:30",
                 "delayed": true
             }
         },
         "Div 3": {
             "sat-0830": {
-                "room": "NC -  2",
+                "room": "AC -  103",
                 "span": 2,
                 "type": "lec",
                 "custom_time": "9:00 - 10:30",
@@ -1770,26 +1770,26 @@ const MASTER_SCHEDULE = {
             }
         },
         "Div 4": {
+            "sat-0830": {
+                "room": "AC -  104",
+                "span": 2,
+                "type": "lec",
+                "custom_time": "09:00 - 10:30",
+                "delayed": true
+            }
+        },
+        "Div 5": {
             "sat-1030": {
-                "room": "NC -  2",
+                "room": "AC -  101",
                 "span": 2,
                 "type": "lec",
                 "custom_time": "11:00 - 12:30",
                 "delayed": true
             }
         },
-        "Div 5": {
-            "sat-0830": {
-                "room": "NC -  3",
-                "span": 2,
-                "type": "lec",
-                "custom_time": "9:00 - 10:30",
-                "delayed": true
-            }
-        },
         "Div 6": {
             "sat-1030": {
-                "room": "NC -  3",
+                "room": "AC -  102",
                 "span": 2,
                 "type": "lec",
                 "custom_time": "11:00 - 12:30",
@@ -1797,17 +1797,17 @@ const MASTER_SCHEDULE = {
             }
         },
         "Div 7": {
-            "sat-0830": {
-                "room": "NC -  4",
+            "sat-1030": {
+                "room": "AC -  103",
                 "span": 2,
                 "type": "lec",
-                "custom_time": "9:00 - 10:30",
+                "custom_time": "11:00 - 12:30",
                 "delayed": true
             }
         },
         "Div 8": {
             "sat-1030": {
-                "room": "NC -  4",
+                "room": "AC -  104",
                 "span": 2,
                 "type": "lec",
                 "custom_time": "11:00 - 12:30",
@@ -1816,7 +1816,7 @@ const MASTER_SCHEDULE = {
         },
         "Div 9": {
             "sat-1030": {
-                "room": "NC -  8",
+                "room": "AC -  104",
                 "span": 2,
                 "type": "lec",
                 "custom_time": "11:00 - 12:30",
@@ -2337,8 +2337,8 @@ const MASTER_SCHEDULE = {
             "B2": {
                 "wed-1430": {
                     "room": "NC -  14",
-                    "span": 2,
-                    "type": "lab"
+                    "type": "lab",
+                    "span": 2
                 }
             },
             "B3": {
@@ -2356,7 +2356,7 @@ const MASTER_SCHEDULE = {
                 }
             },
             "fri-1130": {
-                "room": "NC -  4",
+                "room": "NC -  8",
                 "type": "lec"
             },
             "tue-1430": {
@@ -2364,7 +2364,7 @@ const MASTER_SCHEDULE = {
                 "type": "lec"
             },
             "wed-1630": {
-                "room": "NC -  4",
+                "room": "NC -  8",
                 "type": "lec"
             }
         }
@@ -3145,7 +3145,7 @@ function getLabEmoji(code, room) {
 
 // --- DATA MERGER FUNCTION ---
 function getStudentData(mis) {
-    if (!GENERATED_DB || !GENERATED_DB[mis]) {
+    if (typeof GENERATED_DB === 'undefined' || !GENERATED_DB[mis]) {
         return null;
     }
 
@@ -3229,6 +3229,4 @@ function addToSchedule(schedule, timeKey, entry) {
     }
 }
 
-const ACTIVE_NOTES = [
-    "Thx for using the portal!!  If there would be any wrong info about you just contact me... I'll definitely sort it out."
-];
+const ACTIVE_NOTES = [];
